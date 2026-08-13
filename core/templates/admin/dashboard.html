@@ -1,0 +1,468 @@
+{% extends 'admin/base_site.html' %}
+{% load static %}
+
+{% block content %}
+{{ block.super }}
+{% if not is_popup %}
+
+<section class="stats-grid">
+  {% if pode_usuarios %}
+  <div class="stat-card card-panel">
+    <div class="stat-top">
+      <span class="stat-label">Total Usuários</span>
+      <div class="stat-icon-box info">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+    </div>
+    <div class="stat-value">{{ total_usuarios }}</div>
+    <div class="stat-change">+11% vs mês passado</div>
+  </div>
+  {% endif %}
+
+  {% if pode_gestao %}
+  <div class="stat-card card-panel">
+    <div class="stat-top">
+      <span class="stat-label">Postagens Blog</span>
+      <div class="stat-icon-box success">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/>
+        </svg>
+      </div>
+    </div>
+    <div class="stat-value">{{ total_postagens }}</div>
+    <div class="stat-change">8 rascunhos pendentes</div>
+  </div>
+
+  <div class="stat-card card-panel">
+    <div class="stat-top">
+      <span class="stat-label">Downloads Ebooks</span>
+      <div class="stat-icon-box warning">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+      </div>
+    </div>
+    <div class="stat-value">{{ total_downloads }}</div>
+    <div class="stat-change">+22% no mês</div>
+  </div>
+
+  <div class="stat-card card-panel highlighted">
+    <div class="stat-top">
+      <span class="stat-label">Próximos Eventos</span>
+      <div class="stat-icon-box primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+      </div>
+    </div>
+    <div class="stat-value">{{ total_eventos }}</div>
+    <div class="stat-change">3 agendados esta semana</div>
+  </div>
+  {% endif %}
+
+  {% if pode_acessos %}
+  <div class="stat-card card-panel">
+    <div class="stat-top">
+      <span class="stat-label">Acessos ({{ periodo_atual|capfirst }})</span>
+      <div class="stat-icon-box info">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+        </svg>
+      </div>
+    </div>
+    <div class="stat-value">{{ acessos_periodo }}</div>
+    <div class="stat-change">
+      {% if sinal_acessos == 'up' %}↑{% elif sinal_acessos == 'down' %}↓{% else %}→{% endif %}
+      {{ variacao_acessos }}% vs período anterior
+    </div>
+  </div>
+  {% endif %}
+
+  {% if pode_comercial %}
+  <div class="stat-card card-panel">
+    <div class="stat-top">
+      <span class="stat-label">Contatos ({{ periodo_atual|capfirst }})</span>
+      <div class="stat-icon-box success">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+      </div>
+    </div>
+    <div class="stat-value">{{ contatos_periodo }}</div>
+    <div class="stat-change">
+      {% if sinal_contatos == 'up' %}↑{% elif sinal_contatos == 'down' %}↓{% else %}→{% endif %}
+      {{ variacao_contatos }}% vs período anterior
+    </div>
+  </div>
+  {% endif %}
+
+  {% if pode_rh %}
+  <div class="stat-card card-panel">
+    <div class="stat-top">
+      <span class="stat-label">Candidaturas ({{ periodo_atual|capfirst }})</span>
+      <div class="stat-icon-box warning">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/>
+        </svg>
+      </div>
+    </div>
+    <div class="stat-value">{{ candidaturas_periodo }}</div>
+    <div class="stat-change">
+      {% if sinal_candidaturas == 'up' %}↑{% elif sinal_candidaturas == 'down' %}↓{% else %}→{% endif %}
+      {{ variacao_candidaturas }}% vs período anterior
+    </div>
+  </div>
+  {% endif %}
+
+  {% if pode_usuarios %}
+  <div class="stat-card card-panel highlighted">
+    <div class="stat-top">
+      <span class="stat-label">Total Geral</span>
+      <div class="stat-icon-box primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+        </svg>
+      </div>
+    </div>
+    <div class="stat-value">{{ total_acessos|add:total_contatos|add:total_candidaturas }}</div>
+    <div class="stat-change">Total de interações</div>
+  </div>
+  {% endif %}
+
+  {% if pode_seguranca %}
+  <div class="stat-card card-panel">
+    <div class="stat-top">
+      <span class="stat-label">IPs Suspeitos Ativos</span>
+      <div class="stat-icon-box" style="background:#ef44441a;color:#ef4444">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+    </div>
+    <div class="stat-value" style="color:{% if total_ips_ativos %}#ef4444{% else %}var(--foreground){% endif %}">{{ total_ips_ativos }}</div>
+    <div class="stat-change">{% if total_ips_ativos %}⚠ Revisar no painel de segurança{% else %}Nenhum IP flagrado{% endif %}</div>
+  </div>
+
+  <div class="stat-card card-panel">
+    <div class="stat-top">
+      <span class="stat-label">Eventos ({{ periodo_atual|capfirst }})</span>
+      <div class="stat-icon-box warning">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </div>
+    </div>
+    <div class="stat-value">{{ eventos_periodo }}</div>
+    <div class="stat-change">
+      {% if eventos_hoje %}{{ eventos_hoje }} hoje{% else %}Nenhum hoje{% endif %} · total {{ total_eventos }}
+    </div>
+  </div>
+  {% endif %}
+</section>
+
+<!-- Filtro de Período -->
+{% if pode_acessos or pode_comercial or pode_rh %}
+<div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
+  <span style="font-size: 14px; color: var(--muted-foreground);">Filtrar por período:</span>
+  {% for p in periodos_disponiveis %}
+    <a href="?periodo={{ p.key }}" 
+       style="padding: 6px 16px; border-radius: 20px; font-size: 13px; text-decoration: none; 
+              background: {% if periodo_atual == p.key %}var(--primary){% else %}var(--card){% endif %}; 
+              color: {% if periodo_atual == p.key %}white{% else %}var(--foreground){% endif %}; 
+              border: 1px solid var(--border);">
+      {{ p.label }}
+    </a>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="content-grid has-sidebar">
+  {% if pode_usuarios %}
+  <div class="card-panel">
+    <div class="dashboard-table-wrap" style="border-bottom:1px solid var(--border);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <h2 style="font-family:var(--font-display);font-size:18px;font-weight:600;margin:0;color:var(--foreground)">Usuários Recentes</h2>
+        <p style="font-size:12px;color:var(--muted-foreground);margin:2px 0 0">Monitorando acesso e atividade da plataforma.</p>
+      </div>
+      <a href="{% url 'admin:core_usuario_changelist' %}" style="font-size:12px;color:var(--primary);text-decoration:none">Ver todos</a>
+    </div>
+    <div class="dashboard-table-wrap">
+      <table class="dashboard-table">
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Status</th>
+            <th>Role</th>
+            <th>Last Login</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for usuario in usuarios_recentes %}
+          <tr>
+            <td>
+              <div class="user-cell">
+                <div class="avatar">{{ usuario.username|first|upper }}</div>
+                <span class="name">{{ usuario.get_full_name|default:usuario.username }}</span>
+              </div>
+            </td>
+            <td>
+              <span class="status-badge {% if usuario.is_active %}active{% else %}inactive{% endif %}">
+                {{ usuario.is_active|yesno:"Ativo,Inativo" }}
+              </span>
+            </td>
+            <td>
+              <span class="status-badge {{ usuario.cargo }}">
+                {{ usuario.get_cargo_display }}
+              </span>
+            </td>
+            <td style="color:var(--muted-foreground)">{% if usuario.last_login %}{{ usuario.last_login|timesince }} atrás{% else %}Nunca{% endif %}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" style="color:var(--muted-foreground);padding:32px;text-align:center">Nenhum usuário encontrado</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <aside class="space-y-6" style="display:flex;flex-direction:column;gap:24px">
+    {% if pode_gestao %}
+    <div class="card-panel" style="padding:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <h3 style="font-family:var(--font-display);font-size:16px;font-weight:600;margin:0;color:var(--foreground)">Blog</h3>
+        <a href="{% url 'admin:core_postblog_changelist' %}" style="font-size:12px;color:var(--primary);text-decoration:none">Ver todos</a>
+      </div>
+      <ul class="side-list">
+        {% for post in posts_recentes %}
+        <li>
+          <div class="thumb"></div>
+          <div>
+            <div class="item-title">{{ post.titulo }}</div>
+            <div class="item-meta">{{ post.tag|default:post.get_status_display }}</div>
+          </div>
+        </li>
+        {% empty %}
+        <li style="color:var(--muted-foreground);font-size:13px">Nenhum post publicado</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    {% if pode_gestao %}
+    <div class="card-panel" style="padding:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <h3 style="font-family:var(--font-display);font-size:16px;font-weight:600;margin:0;color:var(--foreground)">Ebooks Populares</h3>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted-foreground)">
+          <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+        </svg>
+      </div>
+      <ul class="side-list">
+        {% for ebook in ebooks_populares %}
+        <li>
+          <div class="thumb ebook"></div>
+          <div style="flex:1;min-width:0">
+            <div class="item-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ ebook.titulo }}</div>
+            <div class="download-count">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              {{ ebook.downloads }} downloads
+            </div>
+          </div>
+        </li>
+        {% empty %}
+        <li style="color:var(--muted-foreground);font-size:13px">Nenhum ebook disponível</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+  </aside>
+</div>
+
+{% if pode_gestao %}
+<div class="card-panel">
+  <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+    <h3 style="font-family:var(--font-display);font-size:18px;font-weight:600;margin:0;color:var(--foreground)">Calendário de Eventos</h3>
+  </div>
+  <div style="padding:20px">
+    <ul class="event-list">
+      {% for evento in proximos_eventos %}
+      <li class="event-item">
+        <div class="event-header">
+          <div>
+            <div class="event-title">{{ evento.titulo }}</div>
+            <div class="event-meta">
+              <span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                </svg>
+                {{ evento.data_inicio|date:"d/m/Y" }} · {{ evento.data_inicio|date:"H:i" }}
+              </span>
+              <span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                </svg>
+                {{ evento.local }}
+              </span>
+            </div>
+          </div>
+          <span class="status-badge {% if evento.ativo %}active{% else %}inactive{% endif %}">
+            {{ evento.ativo|yesno:"Ativo,Inativo" }}
+          </span>
+        </div>
+      </li>
+      {% empty %}
+      <li style="color:var(--muted-foreground);font-size:13px;text-align:center;padding:32px 0">Nenhum evento próximo</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endif %}
+
+{% if pode_seguranca %}
+<div style="margin-top:24px">
+  <div class="card-panel">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div>
+        <h3 style="font-family:var(--font-display);font-size:18px;font-weight:600;margin:0;color:var(--foreground)">🛡 Segurança do Site</h3>
+        <p style="font-size:12px;color:var(--muted-foreground);margin:2px 0 0">Eventos suspeitos detectados automaticamente ({{ periodo_atual|capfirst }}). Nada é bloqueado — apenas monitorado.</p>
+      </div>
+      <div style="display:flex;gap:8px">
+        <a href="{% url 'admin:core_securityevent_changelist' %}" style="font-size:12px;color:var(--primary);text-decoration:none;padding:6px 14px;border:1px solid var(--border);border-radius:999px">Eventos</a>
+        <a href="{% url 'admin:core_ipsuspeito_changelist' %}" style="font-size:12px;color:var(--primary);text-decoration:none;padding:6px 14px;border:1px solid var(--border);border-radius:999px">IPs Suspeitos</a>
+      </div>
+    </div>
+
+    <div class="content-grid has-sidebar" style="padding:20px">
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <h4 style="font-size:14px;font-weight:600;margin:0;color:var(--foreground)">Eventos por dia</h4>
+        </div>
+        <div style="display:flex;align-items:flex-end;gap:6px;height:190px;padding-bottom:4px;border-bottom:1px solid var(--border)" id="sec-chart">
+          <div style="color:var(--muted-foreground);font-size:13px">Carregando…</div>
+        </div>
+      </div>
+
+      <aside>
+        <h4 style="font-size:14px;font-weight:600;margin:0 0 14px;color:var(--foreground)">Eventos por tipo</h4>
+        {% for item in eventos_por_tipo %}
+        <div style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+            <span style="color:var(--foreground)">{{ item.label }}</span>
+            <span style="color:var(--muted-foreground)">{{ item.total }}</span>
+          </div>
+          <div style="height:8px;background:rgba(127,127,127,0.15);border-radius:999px;overflow:hidden">
+            {% if eventos_periodo %}
+            <div style="height:100%;width:{% widthratio item.total eventos_periodo 100 %}%;background:linear-gradient(90deg,#f97316,#ef4444);border-radius:999px"></div>
+            {% endif %}
+          </div>
+        </div>
+        {% empty %}
+        <div style="color:var(--muted-foreground);font-size:13px">Sem eventos no período</div>
+        {% endfor %}
+      </aside>
+    </div>
+  </div>
+
+  <div class="content-grid has-sidebar" style="margin-top:24px;grid-template-columns:1fr 1fr">
+    <div class="card-panel">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border)">
+        <h3 style="font-family:var(--font-display);font-size:16px;font-weight:600;margin:0;color:var(--foreground)">IPs mais flagrados</h3>
+      </div>
+      <div class="dashboard-table-wrap">
+        <table class="dashboard-table">
+          <thead>
+            <tr><th>IP</th><th>Eventos</th><th>Situação</th></tr>
+          </thead>
+          <tbody>
+            {% for item in ips_top %}
+            <tr>
+              <td style="font-family:monospace;font-size:12px">{{ item.ip_address }}</td>
+              <td><span class="status-badge inactive">{{ item.total }}</span></td>
+              <td>
+                {% if item.ip_address %}
+                  {% for ip in ultimos_ips %}
+                    {% if ip.ip_address == item.ip_address and not ip.resolvido %}
+                    <span class="status-badge inactive">Em análise</span>
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" style="color:var(--muted-foreground);padding:24px;text-align:center">Sem ocorrências no período</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card-panel">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+        <h3 style="font-family:var(--font-display);font-size:16px;font-weight:600;margin:0;color:var(--foreground)">Últimos eventos</h3>
+        <a href="{% url 'admin:core_securityevent_changelist' %}" style="font-size:12px;color:var(--primary);text-decoration:none">Ver todos</a>
+      </div>
+      <ul class="side-list" style="padding:8px 20px">
+        {% for ev in ultimos_eventos %}
+        <li>
+          <div class="thumb" style="background:#ef44441a;color:#ef4444;display:flex;align-items:center;justify-content:center;font-size:14px">!</div>
+          <div style="flex:1;min-width:0">
+            <div class="item-title" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ ev.get_tipo_display }} · {{ ev.ip_address }}</div>
+            <div class="item-meta">{{ ev.path|truncatechars:40 }} · {{ ev.timestamp|date:"d/m H:i" }}</div>
+          </div>
+        </li>
+        {% empty %}
+        <li style="color:var(--muted-foreground);font-size:13px">Nenhum evento registrado</li>
+        {% endfor %}
+      </ul>
+      <div style="padding:12px 20px;border-top:1px solid var(--border)">
+        <h4 style="font-size:13px;font-weight:600;margin:0 0 8px;color:var(--foreground)">IPs suspeitos recentes</h4>
+        {% for ip in ultimos_ips %}
+        <span style="display:inline-block;margin:0 6px 6px 0;font-family:monospace;font-size:11px;padding:4px 10px;border-radius:999px;background:#ef44441a;color:#ef4444;border:1px solid #ef444433">{{ ip.ip_address }}</span>
+        {% empty %}
+        <span style="color:var(--muted-foreground);font-size:13px">Nenhum IP suspeito ativo</span>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var wrap = document.getElementById('sec-chart');
+  if (!wrap) return;
+  var labels = {{ sec_chart_labels|safe }};
+  var data = {{ sec_chart_data|safe }};
+  if (!data || !data.length) {
+    wrap.innerHTML = '<div style="color:var(--muted-foreground);font-size:13px;padding:10px 0">Sem eventos de segurança no período</div>';
+    return;
+  }
+  var max = Math.max.apply(null, data);
+  wrap.innerHTML = '';
+  data.forEach(function (v, i) {
+    var col = document.createElement('div');
+    col.style.cssText = 'flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;';
+    var bar = document.createElement('div');
+    bar.style.height = Math.max(4, Math.round(v / max * 160)) + 'px';
+    bar.style.background = v > 0 ? 'linear-gradient(180deg,#f97316,#ef4444)' : '#e6e6e6';
+    bar.style.width = '70%';
+    bar.style.borderRadius = '6px 6px 2px 2px';
+    bar.style.minWidth = '8px';
+    bar.title = labels[i] + ': ' + v + ' evento(s)';
+    var lab = document.createElement('div');
+    lab.textContent = labels[i];
+    lab.style.cssText = 'font-size:10px;color:var(--muted-foreground);white-space:nowrap;transform:rotate(-35deg);transform-origin:top center;margin-top:2px';
+    col.appendChild(bar);
+    col.appendChild(lab);
+    wrap.appendChild(col);
+  });
+})();
+</script>
+
+{% endif %}
+
+{% endif %}
+{% endblock %}

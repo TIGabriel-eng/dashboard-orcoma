@@ -1,0 +1,20 @@
+# Ambiente
+.env
+.env.*
+!.env.example
+
+# Banco de dados
+db.sqlite3
+
+# Mídia enviada (uploads de blog, currículos, ebooks, etc.)
+media/
+_media_original_backup/
+
+# Python / Django
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+staticfiles/
+*.log

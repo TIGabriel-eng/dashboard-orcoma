@@ -1,0 +1,192 @@
+{% extends 'admin/base_site.html' %}
+{% load i18n static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'admin/css/login.css' %}">
+{{ media.css }}
+<style>
+  html {
+    background: linear-gradient(160deg, #1010a0 0%, #0a0a78 45%, #04044e 100%);
+  }
+  body.login {
+    min-height: 100vh;
+    background: linear-gradient(160deg, #1010a0 0%, #0a0a78 45%, #04044e 100%);
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNjAwIiBoZWlnaHQ9IjkwMCIgdmlld0JveD0iMCAwIDE2MDAgOTAwIj4KPGRlZnM+CjxwYXRoIGlkPSJzIiBkPSJNIDIwIC00MCBDIC0yMCAtNDAgLTIwIC0xNSAwIC0xNSBDIDIwIC0xNSAyMCAxNSAwIDE1IEMgLTIwIDE1IC0yMCA0MCAyMCA0MCIgZmlsbD0ibm9uZSIvPgo8L2RlZnM+CjxnIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSI2IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuMTQiPgo8dXNlIGhyZWY9IiNzIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzMjAgMTYwKSBzY2FsZSgyLjIpIi8+Cjx1c2UgaHJlZj0iI3MiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEzMjAgMjIwKSBzY2FsZSgxLjYpIHJvdGF0ZSgxOCkiLz4KPHVzZSBocmVmPSIjcyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTcwIDcyMCkgc2NhbGUoMS45KSByb3RhdGUoLTEyKSIvPgo8dXNlIGhyZWY9IiNzIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMjMwIDY2MCkgc2NhbGUoMi42KSByb3RhdGUoMTApIi8+Cjx1c2UgaHJlZj0iI3MiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDcyMCA3ODApIHNjYWxlKDEuMykgcm90YXRlKC0yMikiLz4KPHVzZSBocmVmPSIjcyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoOTQwIDEyMCkgc2NhbGUoMS4xKSIvPgo8L2c+Cjwvc3ZnPg=="), linear-gradient(160deg, #1010a0 0%, #0a0a78 45%, #04044e 100%);
+    background-size: cover, cover;
+    background-position: center, center;
+  }
+  body.login #container {
+    max-width: 600px !important;
+    margin: 0 auto !important;
+    padding-top: 6vh !important;
+    min-height: auto;
+    display: block !important;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: visible;
+  }
+  body.login .custom-sidebar,
+  body.login .custom-main-wrapper,
+  body.login .custom-topbar,
+  body.login .mobile-nav,
+  body.login .page-content {
+    display: none;
+  }
+  body.login .card-panel {
+    padding: 64px 60px;
+    border: none;
+    background: linear-gradient(160deg, #0c0ccc 0%, #1a1aff 50%, #0000b3 100%);
+    box-shadow: 0 16px 60px -12px rgba(0, 0, 60, 0.45);
+  }
+  body.login .login-logo {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  body.login .login-logo-img {
+    max-width: 280px;
+    height: auto;
+    margin: 0 auto 24px;
+    display: block;
+  }
+  body.login .login-notice {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #e8b800;
+    letter-spacing: 0.02em;
+  }
+  body.login .form-row {
+    border: none;
+    padding: 6px 0;
+    display: flex;
+    flex-direction: column;
+  }
+  body.login .form-row label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 8px;
+  }
+  body.login .form-row input {
+    width: 100%;
+    max-width: 100%;
+    background: #ffffff;
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: var(--radius);
+    padding: 15px 16px;
+    font-size: 16px;
+    color: #111111;
+    font-family: var(--font-sans);
+  }
+  body.login .form-row input:focus {
+    border-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.35);
+    outline: none;
+  }
+  body.login .submit-row {
+    background: transparent;
+    border: none;
+    padding: 20px 0 0;
+    margin: 0;
+  }
+  body.login .submit-row input {
+    width: 100%;
+    background: #e8b800;
+    color: #000000;
+    border: none;
+    border-radius: var(--radius);
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: var(--font-sans);
+    cursor: pointer;
+    transition: filter 0.15s;
+  }
+  body.login .submit-row input:hover {
+    filter: brightness(1.1);
+  }
+  body.login .errornote {
+    background: rgba(255,255,255,0.92);
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    color: #b30000;
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+  body.login .password-reset-link {
+    text-align: center;
+    margin-top: 18px;
+  }
+  body.login .password-reset-link a {
+    color: rgba(255,255,255,0.85);
+    font-size: 13px;
+    text-decoration: none;
+  }
+  body.login .password-reset-link a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+  }
+  body.login .messagelist {
+    display: none;
+  }
+</style>
+{% endblock %}
+
+{% block bodyclass %}{{ block.super }} login{% endblock %}
+
+{% block nav-sidebar %}{% endblock %}
+{% block custom-topbar %}{% endblock %}
+{% block mobile-nav %}{% endblock %}
+{% block extrabody %}{% endblock %}
+
+{% block content_title %}{% endblock %}
+
+{% block content %}
+{% if form.errors and not form.non_field_errors %}
+<div class="errornote">
+  {% blocktranslate count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktranslate %}
+</div>
+{% endif %}
+
+{% if form.non_field_errors %}
+{% for error in form.non_field_errors %}
+<div class="errornote">{{ error }}</div>
+{% endfor %}
+{% endif %}
+
+<div class="card-panel">
+  <div class="login-logo">
+    <img src="{% static 'images/grupo-orcoma-logo.png' %}" alt="Grupo Orcoma" class="login-logo-img" style="max-width:200px;height:auto;margin:0 auto 24px;display:block">
+  </div>
+
+  <form action="{{ app_path }}" method="post" id="login-form">
+    {% csrf_token %}
+    <div class="form-row">
+      {{ form.username.errors }}
+      <label for="id_username">{{ form.username.label }}</label>
+      {{ form.username }}
+    </div>
+    <div class="form-row">
+      {{ form.password.errors }}
+      <label for="id_password">{{ form.password.label }}</label>
+      {{ form.password }}
+      <input type="hidden" name="next" value="{{ next }}">
+    </div>
+    {% url 'admin_password_reset' as password_reset_url %}
+    {% if password_reset_url %}
+    <div class="password-reset-link">
+      <a href="{{ password_reset_url }}">{% translate 'Forgotten your password or username?' %}</a>
+    </div>
+    {% endif %}
+    <div class="submit-row">
+      <input type="submit" value="{% translate 'Log in' %}">
+    </div>
+  </form>
+</div>
+<div class="login-notice">Apenas pessoas autorizadas ao administrativo!</div>
+{% endblock %}

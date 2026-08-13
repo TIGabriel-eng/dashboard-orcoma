@@ -1,0 +1,66 @@
+{% extends 'admin/base_site.html' %}
+{% load static %}
+
+{% block content %}
+{% if not is_popup %}
+    {% block messages %}
+      {% if messages %}
+      <ul class="messagelist">{% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|capfirst }}</li>
+      {% endfor %}</ul>
+      {% endif %}
+    {% endblock messages %}
+
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+  <div>
+    <h2 style="font-family:var(--font-display);font-size:20px;font-weight:700;margin:0;color:var(--foreground)">Especialidades</h2>
+    <p style="font-size:13px;color:var(--muted-foreground);margin:4px 0 0">Gerencie as especialidades que aparecem na seção "Somos especialistas quando o assunto é:" do site. Os cards abaixo são exibidos exatamente como no site oficial.</p>
+  </div>
+  <a href="{% url 'admin:core_especialidade_add' %}" style="display:inline-flex;align-items:center;gap:8px;background:var(--primary);color:var(--primary-foreground);padding:10px 20px;border-radius:var(--radius);font-size:14px;font-weight:600;text-decoration:none;transition:filter 0.15s">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+    Adicionar Especialidade
+  </a>
+</div>
+
+{% if cl.result_list %}
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px">
+  {% for especialidade in cl.result_list %}
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(0,0,0,0.04)">
+    <div style="position:relative;height:160px;background:var(--muted)">
+      {% if especialidade.imagem %}
+      <img src="{{ especialidade.imagem.url }}" alt="{{ especialidade.titulo }}" style="width:100%;height:100%;object-fit:cover;display:block" />
+      {% else %}
+      <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--muted-foreground);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em">Grupo Orcoma</div>
+      {% endif %}
+      {% if not especialidade.ativo %}
+      <span style="position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.7);color:#fff;padding:4px 10px;border-radius:999px;font-size:10px;font-weight:600;text-transform:uppercase">Inativo</span>
+      {% endif %}
+    </div>
+    <div style="padding:16px 20px;display:flex;flex-direction:column;gap:8px;flex:1">
+      <h3 style="font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--foreground);margin:0;line-height:1.4">{{ especialidade.titulo }}</h3>
+      <p style="font-size:12px;color:var(--muted-foreground);line-height:1.5;margin:0;flex:1">Especialidade exibida na página inicial do site.</p>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <a href="{% url 'admin:core_especialidade_change' especialidade.pk %}" style="flex:1;display:inline-flex;align-items:center;justify-content:center;background:#0c0ccc;color:#fff;padding:10px 16px;border-radius:12px;font-size:12px;font-weight:700;text-decoration:none;transition:filter 0.15s">Editar</a>
+        <a href="{% url 'admin:core_especialidade_delete' especialidade.pk %}" style="display:inline-flex;align-items:center;justify-content:center;background:var(--destructive);color:var(--destructive-foreground);padding:10px 16px;border-radius:12px;font-size:12px;font-weight:700;text-decoration:none;transition:filter 0.15s">Excluir</a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:48px 24px;text-align:center">
+  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--muted-foreground)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 16px;display:block">
+    <polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>
+  </svg>
+  <h3 style="font-family:var(--font-display);font-size:16px;font-weight:600;color:var(--foreground);margin:0 0 8px">Nenhuma especialidade cadastrada</h3>
+  <p style="font-size:13px;color:var(--muted-foreground);margin:0 0 20px">Adicione sua primeira especialidade para que ela apareça no site.</p>
+  <a href="{% url 'admin:core_especialidade_add' %}" style="display:inline-flex;align-items:center;gap:8px;background:var(--primary);color:var(--primary-foreground);padding:10px 20px;border-radius:var(--radius);font-size:14px;font-weight:600;text-decoration:none">Adicionar Especialidade</a>
+</div>
+{% endif %}
+
+{% else %}
+    {{ content }}
+{% endif %}
+{% endblock %}

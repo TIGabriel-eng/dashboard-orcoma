@@ -1,0 +1,199 @@
+{% extends 'admin/base_site.html' %}
+{% load static %}
+
+{% block content %}
+{{ block.super }}
+{% if not is_popup %}
+
+<section class="stats-grid">
+  <div class="stat-card card-panel highlighted">
+    <div class="stat-top">
+      <span class="stat-label">Pessoas que entraram em contato</span>
+      <div class="stat-icon-box primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+    </div>
+    <div class="stat-value">{{ total_pessoas }}</div>
+    <div class="stat-change">Identificadas por e-mail/celular</div>
+  </div>
+
+  <div class="stat-card card-panel">
+    <div class="stat-top">
+      <span class="stat-label">Total de Interações</span>
+      <div class="stat-icon-box success">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+      </div>
+    </div>
+    <div class="stat-value">{{ total_contatos }}</div>
+    <div class="stat-change">
+      {% if data_inicio %}Desde {{ data_inicio|date:"d/m/Y" }} (novo site){% else %}Sem registros ainda{% endif %}
+    </div>
+  </div>
+
+  <div class="stat-card card-panel">
+    <div class="stat-top">
+      <span class="stat-label">Inscritos Newsletter</span>
+      <div class="stat-icon-box warning">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="2" ry="2"/><polyline points="22,6 12,13 2,6"/>
+        </svg>
+      </div>
+    </div>
+    <div class="stat-value">{{ total_newsletter }}</div>
+    <div class="stat-change">Newsletters do site</div>
+  </div>
+</section>
+
+<div class="content-grid has-sidebar">
+  <div class="card-panel">
+    <div class="dashboard-table-wrap" style="border-bottom:1px solid var(--border);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <h2 style="font-family:var(--font-display);font-size:18px;font-weight:600;margin:0;color:var(--foreground)">Contatos por Origem</h2>
+        <p style="font-size:12px;color:var(--muted-foreground);margin:2px 0 0">De onde vieram os contatos no site.</p>
+      </div>
+      <a href="{% url 'admin:core_contactlead_changelist' %}" style="font-size:12px;color:var(--primary);text-decoration:none">Ver todos</a>
+    </div>
+    <div class="dashboard-table-wrap">
+      <table class="dashboard-table">
+        <thead>
+          <tr>
+            <th>Origem</th>
+            <th>Contatos</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in por_origem %}
+          <tr>
+            <td>{{ item.label }}</td>
+            <td>
+              <span class="status-badge active">{{ item.total }}</span>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="2" style="color:var(--muted-foreground);padding:32px;text-align:center">Nenhum contato registrado</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card-panel">
+    <div class="dashboard-table-wrap" style="border-bottom:1px solid var(--border);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <h2 style="font-family:var(--font-display);font-size:18px;font-weight:600;margin:0;color:var(--foreground)">Contatos por Interesse</h2>
+        <p style="font-size:12px;color:var(--muted-foreground);margin:2px 0 0">O que as pessoas procuravam.</p>
+      </div>
+    </div>
+    <div class="dashboard-table-wrap">
+      <table class="dashboard-table">
+        <thead>
+          <tr>
+            <th>Interesse</th>
+            <th>Contatos</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in por_interesse %}
+          <tr>
+            <td>{{ item.label }}</td>
+            <td>
+              <span class="status-badge active">{{ item.total }}</span>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="2" style="color:var(--muted-foreground);padding:32px;text-align:center">Nenhum contato registrado</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="card-panel" style="margin-top:24px">
+  <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+    <h3 style="font-family:var(--font-display);font-size:18px;font-weight:600;margin:0;color:var(--foreground)">Quantas vezes cada pessoa entrou em contato</h3>
+    <a href="{% url 'admin:core_contactlead_changelist' %}" style="font-size:12px;color:var(--primary);text-decoration:none">Ver todos</a>
+  </div>
+  <div style="padding:20px">
+    <table class="dashboard-table">
+      <thead>
+        <tr>
+          <th>Pessoa</th>
+          <th>Vezes em contato</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in ranking %}
+        <tr>
+          <td>{{ item.chave }}</td>
+          <td>
+            <span class="status-badge active">{{ item.total }}</span>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="2" style="color:var(--muted-foreground);padding:32px;text-align:center">Nenhum contato identificado</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card-panel" style="margin-top:24px">
+  <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+    <h3 style="font-family:var(--font-display);font-size:18px;font-weight:600;margin:0;color:var(--foreground)">Últimos Contatos</h3>
+    <a href="{% url 'admin:core_contactlead_changelist' %}" style="font-size:12px;color:var(--primary);text-decoration:none">Ver todos</a>
+  </div>
+  <div class="dashboard-table-wrap">
+    <table class="dashboard-table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>E-mail</th>
+          <th>Origem</th>
+          <th>Interesse</th>
+          <th>Quando</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in ultimos_contatos %}
+        <tr>
+          <td>{{ c.nome|default:"—" }}</td>
+          <td>{{ c.email|default:"—" }}</td>
+          <td>{{ c.get_origem_display }}</td>
+          <td>{{ c.get_interesse_display }}</td>
+          <td style="color:var(--muted-foreground)">{{ c.timestamp|date:"d/m/Y H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" style="color:var(--muted-foreground);padding:32px;text-align:center">Nenhum contato registrado</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card-panel" style="margin-top:24px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding:16px 20px 0">
+    <h3 style="font-family:var(--font-display);font-size:16px;font-weight:600;margin:0;color:var(--foreground)">Newsletters Recentes</h3>
+    <a href="{% url 'admin:core_newsletterinscricao_changelist' %}" style="font-size:12px;color:var(--primary);text-decoration:none">Ver todos</a>
+  </div>
+  <ul class="side-list">
+    {% for n in newsletter_recentes %}
+    <li>
+      <div class="thumb"></div>
+      <div>
+        <div class="item-title">{{ n.email }}</div>
+        <div class="item-meta">{{ n.get_origem_display }} · {{ n.data_criacao|date:"d/m/Y H:i" }}</div>
+      </div>
+    </li>
+    {% empty %}
+    <li style="color:var(--muted-foreground);font-size:13px">Nenhuma inscrição</li>
+    {% endfor %}
+  </ul>
+</div>
+
+{% endif %}
+{% endblock %}
