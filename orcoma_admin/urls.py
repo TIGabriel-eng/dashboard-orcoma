@@ -18,6 +18,7 @@ from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve as static_serve
+from django.views.generic import RedirectView
 from core.admin import admin_site
 from core.views import frontend_index
 
@@ -25,6 +26,10 @@ urlpatterns = [
     path('admin/', admin_site.urls),
     path('', include('core.urls')),
 ]
+
+if not settings.DEBUG:
+    # Em produção a raiz aponta para o painel administrativo
+    urlpatterns.insert(0, path('', RedirectView.as_view(url='/admin/', permanent=False)))
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
