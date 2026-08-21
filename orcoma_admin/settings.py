@@ -32,7 +32,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY' , 'django-insecure-8j&-$s%%urrrg4$36+ul
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True').lower() in ('1', 'true', 'yes')
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',') if h.strip()]
 
 
 # Application definition
@@ -142,7 +142,9 @@ STATICFILES_DIRS = [
 ]
 
 MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+# Em produção o Render usa um disco persistente (env MEDIA_ROOT=/var/data/media);
+# em dev mantém a pasta local media/.
+MEDIA_ROOT = Path(os.environ.get('MEDIA_ROOT', str(BASE_DIR / 'media')))
 
 # Frontend build output (Vite)
 FRONTEND_DIST_DIR = BASE_DIR.parent / 'frontend' / 'dist'

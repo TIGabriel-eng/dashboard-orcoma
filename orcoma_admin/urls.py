@@ -16,7 +16,6 @@ Including another URLconf
 """
 from django.urls import path, include, re_path
 from django.conf import settings
-from django.conf.urls.static import static
 from django.views.static import serve as static_serve
 from django.views.generic import RedirectView
 from core.admin import admin_site
@@ -31,9 +30,18 @@ if not settings.DEBUG:
     # Em produção a raiz aponta para o painel administrativo
     urlpatterns.insert(0, path('', RedirectView.as_view(url='/admin/', permanent=False)))
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Serve os arquivos de mídia também em produção. O helper `static()` é no-op
+# com DEBUG=False (retorna []); por isso registramos a rota via re_path,
+# padrão recomendado para produção em deploy simples.
+urlpatterns += [
+    re_path(
+        r'^media/(?P<path>.*)$',
+        static_serve,
+        kwargs={'document_root': settings.MEDIA_ROOT},
+    ),
+]
 
+if settings.DEBUG:
     # Serve the built Vite frontend (dist/) during development
     frontend_dist = settings.FRONTEND_DIST_DIR
     urlpatterns += [
