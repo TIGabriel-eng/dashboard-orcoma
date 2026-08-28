@@ -49,14 +49,13 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # Monitor de segurança: detecta e registra acessos suspeitos (não bloqueia)
-    'core.middleware.SegurancaMonitorMiddleware',
 ]
 
 ROOT_URLCONF = 'orcoma_admin.urls'
@@ -140,6 +139,19 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
+# Diretório onde o `collectstatic` agrega os arquivos para produção
+# (WhiteNoise serve a partir daqui no Render). Em dev fica em staticfiles/.
+STATIC_ROOT = Path(os.environ.get('STATIC_ROOT', str(BASE_DIR / 'staticfiles')))
+
+# WhiteNoise: serve estáticos comprimidos e com cache em produção.
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
 
 MEDIA_URL = 'media/'
 # Em produção o Render usa um disco persistente (env MEDIA_ROOT=/var/data/media);

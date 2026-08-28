@@ -5,3 +5,4 @@ pypdfium2
 gunicorn
 dj-database-url
 psycopg2-binary
+whitenoise==6.8.2

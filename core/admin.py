@@ -11,9 +11,8 @@ from django.utils import timezone
 from django.utils.html import format_html, mark_safe
 from datetime import timedelta
 
-from .models import Usuario, PostBlog, Ebook, Evento, PageView, ContactLead, JobApplication, Especialidade, NewsletterInscricao, Carrossel, SobreNosFoto, Cliente, IPSuspeito, SecurityEvent
-from . import security
-from django.db.models.functions import TruncDay, TruncWeek, TruncMonth, TruncYear, Lower
+from .models import Usuario, PostBlog, Ebook, Evento, PageView, ContactLead, JobApplication, Especialidade, NewsletterInscricao, Carrossel, SobreNosFoto, Cliente
+from django.db.models.functions import TruncDay, Lower
 from django.db.models import Count
 from collections import defaultdict
 import json
@@ -77,7 +76,6 @@ def _perfis_usuario(user):
         'pode_acessos': tem('view_pageview'),
         'pode_comercial': tem('view_contactlead', 'view_cliente', 'view_newsletterinscricao'),
         'pode_rh': tem('view_jobapplication'),
-        'pode_seguranca': user.is_superuser or tem('view_securityevent', 'view_ipsuspeito'),
         'pode_usuarios': user.is_superuser or tem('view_usuario', 'change_usuario'),
     }
 
@@ -143,7 +141,6 @@ class OrcomaAdminSite(AdminSite):
         pode_acessos = perfil['pode_acessos']
         pode_comercial = perfil['pode_comercial']
         pode_rh = perfil['pode_rh']
-        pode_seguranca = perfil['pode_seguranca']
         pode_usuarios = perfil['pode_usuarios']
 
         # Estatísticas para o dashboard
@@ -239,58 +236,6 @@ class OrcomaAdminSite(AdminSite):
             variacao_candidaturas = 0
             candidaturas_recentes = JobApplication.objects.none()
 
-        # == Estatísticas de Segurança (SecurityEvent / IPSuspeito) ==
-        if pode_seguranca:
-            ips_ativos = IPSuspeito.objects.filter(resolvido=False)
-            total_ips_ativos = ips_ativos.count()
-            total_eventos = SecurityEvent.objects.count()
-            eventos_periodo = SecurityEvent.objects.filter(
-                timestamp__gte=start, timestamp__lte=end
-            ).count()
-            eventos_hoje = SecurityEvent.objects.filter(
-                timestamp__gte=timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-            ).count()
-
-            # Eventos por dia (para o gráfico do período selecionado)
-            eventos_por_dia = (
-                SecurityEvent.objects.filter(timestamp__gte=start, timestamp__lte=end)
-                .annotate(dia=TruncDay('timestamp'))
-                .values('dia')
-                .annotate(total=Count('id'))
-                .order_by('dia')
-            )
-            sec_chart_labels = [e['dia'].strftime('%d/%m') for e in eventos_por_dia]
-            sec_chart_data = [e['total'] for e in eventos_por_dia]
-
-            # Distribuição por tipo (ranking desc)
-            eventos_por_tipo = list(
-                SecurityEvent.objects.filter(timestamp__gte=start, timestamp__lte=end)
-                .values('tipo')
-                .annotate(total=Count('id'))
-                .order_by('-total')
-            )
-            tipo_choices = dict(SecurityEvent.TIPO_CHOICES)
-            for item in eventos_por_tipo:
-                item['label'] = tipo_choices.get(item['tipo'], item['tipo'])
-
-            # IPs mais flagrados no período
-            ips_top = list(
-                SecurityEvent.objects.filter(timestamp__gte=start, timestamp__lte=end)
-                .values('ip_address')
-                .annotate(total=Count('id'))
-                .order_by('-total')[:8]
-            )
-
-            ultimos_eventos = SecurityEvent.objects.all().order_by('-timestamp')[:10]
-            ultimos_ips = ips_ativos.order_by('-ultima_visto')[:8]
-        else:
-            total_ips_ativos = total_eventos = eventos_periodo = eventos_hoje = 0
-            sec_chart_labels = sec_chart_data = []
-            eventos_por_tipo = []
-            ips_top = []
-            ultimos_eventos = SecurityEvent.objects.none()
-            ultimos_ips = IPSuspeito.objects.none()
-
         # Usuários recentes (últimos 5) — somente admin
         usuarios_recentes = (
             Usuario.objects.all().order_by('-date_joined')[:5]
@@ -352,18 +297,6 @@ class OrcomaAdminSite(AdminSite):
             'variacao_candidaturas': variacao_candidaturas,
             'sinal_candidaturas': sinal(variacao_candidaturas),
             'candidaturas_recentes': candidaturas_recentes,
-            # Segurança
-            'pode_seguranca': pode_seguranca,
-            'total_ips_ativos': total_ips_ativos,
-            'total_eventos': total_eventos,
-            'eventos_periodo': eventos_periodo,
-            'eventos_hoje': eventos_hoje,
-            'sec_chart_labels': json.dumps(sec_chart_labels),
-            'sec_chart_data': json.dumps(sec_chart_data),
-            'eventos_por_tipo': eventos_por_tipo,
-            'ips_top': ips_top,
-            'ultimos_eventos': ultimos_eventos,
-            'ultimos_ips': ultimos_ips,
             # Filtro
             'periodo_atual': periodo_atual,
             'periodos_disponiveis': periodos_disponiveis,
@@ -537,101 +470,11 @@ class EbookAdmin(admin.ModelAdmin):
 
 
 class PageViewAdmin(admin.ModelAdmin):
-    list_display = ['path', 'ip_address', 'ip_status', 'user_agent', 'timestamp']
+    list_display = ['path', 'ip_address', 'user_agent', 'timestamp']
     list_filter = ['timestamp']
     search_fields = ['path', 'ip_address', 'user_agent']
     readonly_fields = ['path', 'ip_address', 'user_agent', 'timestamp']
     list_per_page = 100
-    actions = ['marcar_suspeito', 'marcar_resolvido']
-
-    @admin.display(description='Status do IP')
-    def ip_status(self, obj):
-        if not obj.ip_address:
-            return mark_safe('<span style="color:var(--muted-foreground)">—</span>')
-        if security.ip_e_suspeito(obj.ip_address):
-            return mark_safe(
-                '<span class="status-badge inactive" style="background:#dc26261a;color:#ef4444;border:1px solid #ef444433">Suspeito</span>'
-            )
-        return mark_safe(
-            '<span class="status-badge active" style="background:#16a34a1a;color:#16a34a;border:1px solid #16a34a33">OK</span>'
-        )
-
-    @admin.action(description='Marcar IPs selecionados como SUSPEITOS')
-    def marcar_suspeito(self, request, queryset):
-        marcados = 0
-        for pv in queryset:
-            if security.marcar_ip_suspeito(
-                pv.ip_address,
-                '[manual] Marcado pelo administrador ao revisar acessos',
-                nivel=2,
-            ):
-                marcados += 1
-        self.message_user(request, f'{marcados} IP(s) marcado(s) como suspeito.')
-
-    @admin.action(description='Marcar IPs selecionados como RESOLVIDOS')
-    def marcar_resolvido(self, request, queryset):
-        ips = {pv.ip_address for pv in queryset if pv.ip_address}
-        IPSuspeito.objects.filter(ip_address__in=ips).update(resolvido=True)
-        self.message_user(request, f'{len(ips)} IP(s) marcado(s) como resolvido.')
-
-
-class IPSuspeitoAdmin(admin.ModelAdmin):
-    list_display = ['ip_address', 'nivel_badge', 'motivo_resumido', 'resolvido_badge', 'ultima_visto', 'data_criacao']
-    list_filter = ['resolvido', 'nivel']
-    search_fields = ['ip_address', 'motivo']
-    readonly_fields = ['data_criacao']
-    list_per_page = 100
-    actions = ['marcar_resolvido', 'reativar']
-
-    @admin.display(description='Nível', ordering='nivel')
-    def nivel_badge(self, obj):
-        cores = {1: '#16a34a', 2: '#f59e0b', 3: '#ef4444'}
-        return format_html(
-            '<span class="status-badge" style="background:{}1a;color:{};border:1px solid {}33">{}</span>',
-            cores.get(obj.nivel, '#94a3b8'), cores.get(obj.nivel, '#94a3b8'),
-            cores.get(obj.nivel, '#94a3b8'), obj.get_nivel_display(),
-        )
-
-    @admin.display(description='Status', ordering='resolvido')
-    def resolvido_badge(self, obj):
-        if obj.resolvido:
-            return mark_safe('<span class="status-badge active">Resolvido</span>')
-        return mark_safe('<span class="status-badge inactive">Em análise</span>')
-
-    @admin.display(description='Motivo', ordering='motivo')
-    def motivo_resumido(self, obj):
-        motivos = [m for m in (obj.motivo or '').splitlines() if m.strip()]
-        return (motivos[0] if motivos else '—')[:80]
-
-    @admin.action(description='Marcar selecionados como RESOLVIDOS')
-    def marcar_resolvido(self, request, queryset):
-        n = queryset.update(resolvido=True)
-        self.message_user(request, f'{n} IP(s) marcado(s) como resolvido.')
-
-    @admin.action(description='Reativar (voltar a "em análise")')
-    def reativar(self, request, queryset):
-        n = queryset.update(resolvido=False)
-        self.message_user(request, f'{n} IP(s) reativado(s) para análise.')
-
-
-class SecurityEventAdmin(admin.ModelAdmin):
-    list_display = ['tipo', 'ip_suspeito_badge', 'ip_address', 'path', 'timestamp']
-    list_filter = ['tipo', 'timestamp']
-    search_fields = ['ip_address', 'path', 'user_agent', 'detalhes']
-    readonly_fields = ['tipo', 'ip_address', 'path', 'user_agent', 'detalhes', 'timestamp']
-    date_hierarchy = 'timestamp'
-    list_per_page = 100
-    # Trilha de auditoria é somente leitura: todos os campos são readonly,
-    # mas o administrador pode abrir o detalhe para investigar.
-    has_add_permission = lambda self, request: False
-
-    @admin.display(description='Status do IP')
-    def ip_suspeito_badge(self, obj):
-        if security.ip_e_suspeito(obj.ip_address):
-            return mark_safe(
-                '<span class="status-badge inactive" style="background:#ef44441a;color:#ef4444;border:1px solid #ef444433">Suspeito</span>'
-            )
-        return mark_safe('<span style="color:var(--muted-foreground)">—</span>')
 
 
 class ContactLeadAdmin(admin.ModelAdmin):
@@ -851,5 +694,3 @@ class ClienteAdmin(admin.ModelAdmin):
 
 
 admin_site.register(Cliente, ClienteAdmin)
-admin_site.register(IPSuspeito, IPSuspeitoAdmin)
-admin_site.register(SecurityEvent, SecurityEventAdmin)

@@ -1,4 +1,4 @@
-from tempfile import TemporaryDirectory
+﻿from tempfile import TemporaryDirectory
 from unittest import mock
 
 from django.core.cache import cache
@@ -7,8 +7,6 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from core.models import JobApplication
-from core import security
-from core.models import IPSuspeito, SecurityEvent
 
 
 def _pdf_valido():
@@ -24,7 +22,7 @@ def _pdf_valido():
 
 
 class SubmitJobApplicationTests(TestCase):
-    """Validações de segurança do upload de currículo em Trabalhe Conosco."""
+    """ValidaÃ§Ãµes de seguranÃ§a do upload de currÃ­culo em Trabalhe Conosco."""
 
     tempdir = None
 
@@ -46,7 +44,7 @@ class SubmitJobApplicationTests(TestCase):
 
     def _post(self, curriculo=None, recaptcha_ok=True):
         payload = {
-            'nome': 'João da Silva',
+            'nome': 'JoÃ£o da Silva',
             'email': 'joao@email.com',
             'g-recaptcha-response': 'token-valido' if recaptcha_ok else 'token-invalido',
         }
@@ -108,7 +106,7 @@ class SubmitJobApplicationTests(TestCase):
 
     def test_rejeita_sem_token_recaptcha(self):
         arquivo = SimpleUploadedFile('curriculo.pdf', _pdf_valido(), content_type='application/pdf')
-        payload = {'nome': 'João da Silva', 'email': 'joao@email.com', 'curriculo': arquivo}
+        payload = {'nome': 'JoÃ£o da Silva', 'email': 'joao@email.com', 'curriculo': arquivo}
         with mock.patch('core.api_views._verifica_recaptcha', return_value=False):
             resp = self.client.post(reverse('api_job_application'), payload)
         self.assertEqual(resp.status_code, 400)
@@ -120,7 +118,7 @@ class SubmitJobApplicationTests(TestCase):
 
     def test_honeypot_preenchido_descarta_silenciosamente(self):
         arquivo = SimpleUploadedFile('curriculo.pdf', _pdf_valido(), content_type='application/pdf')
-        payload = {'nome': 'João da Silva', 'email': 'joao@email.com', 'website': 'http://spam.link'}
+        payload = {'nome': 'JoÃ£o da Silva', 'email': 'joao@email.com', 'website': 'http://spam.link'}
         payload['curriculo'] = arquivo
         resp = self.client.post(reverse('api_job_application'), payload)
         self.assertEqual(resp.status_code, 200)
@@ -153,82 +151,3 @@ class SubmitJobApplicationTests(TestCase):
         self.assertFalse(candidatura.preview)
 
 
-class SecurityMonitorTests(TestCase):
-    """Detecção automática de acessos suspeitos (middleware + módulo security)."""
-
-    def setUp(self):
-        cache.clear()
-        SecurityEvent.objects.all().delete()
-        IPSuspeito.objects.all().delete()
-
-    def tearDown(self):
-        cache.clear()
-
-    def _headers(self, ip='198.51.100.10', ua='Mozilla/5.0 (Windows NT 10.0; Win64; x64)'):
-        return {
-            'HTTP_X_FORWARDED_FOR': ip,
-            'HTTP_USER_AGENT': ua,
-            'HTTP_HOST': 'testserver',
-        }
-
-    def test_detecta_path_de_scanner(self):
-        self.client.get('/.env', **self._headers())
-        self.assertEqual(SecurityEvent.objects.filter(tipo='path_invasivo').count(), 1)
-        self.assertTrue(IPSuspeito.objects.filter(ip_address='198.51.100.10', resolvido=False).exists())
-
-    def test_detecta_tentativa_de_injecao(self):
-        self.client.get('/api/posts/?id=1%20UNION%20SELECT%201', **self._headers())
-        self.assertEqual(SecurityEvent.objects.filter(tipo='injecao').count(), 1)
-        self.assertTrue(IPSuspeito.objects.filter(ip_address='198.51.100.10').exists())
-
-    def test_detecta_user_agent_suspeito(self):
-        self.client.get('/', **self._headers(ip='198.51.100.11', ua='sqlmap/1.7.0'))
-        self.assertEqual(SecurityEvent.objects.filter(tipo='user_agent_suspeito').count(), 1)
-        self.assertTrue(IPSuspeito.objects.filter(ip_address='198.51.100.11').exists())
-
-    def test_detecta_path_traversal(self):
-        self.client.get('/../../etc/passwd', **self._headers(ip='198.51.100.12'))
-        self.assertEqual(SecurityEvent.objects.filter(tipo='injecao').count(), 1)
-
-    def test_acesso_normal_nao_gera_evento(self):
-        self.client.get('/', **self._headers())
-        self.client.get('/api/posts/', **self._headers())
-        self.assertEqual(SecurityEvent.objects.count(), 0)
-        self.assertEqual(IPSuspeito.objects.count(), 0)
-
-    def test_ip_local_nao_dispara_alarme(self):
-        # Em desenvolvimento o visitante é o próprio dono (localhost).
-        self.client.get('/.env', HTTP_HOST='127.0.0.1')  # REMOTE_ADDR padrão é 127.0.0.1
-        self.assertEqual(SecurityEvent.objects.count(), 0)
-        self.assertEqual(IPSuspeito.objects.count(), 0)
-
-    def test_alertas_nao_quebram_requests(self):
-        resp = self.client.get('/api/posts/', **self._headers(ip='198.51.100.13', ua='curl/7.0'))
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(SecurityEvent.objects.filter(tipo='user_agent_suspeito').count(), 1)
-
-    def test_marca_e_reverte_ip_suspeito(self):
-        v1 = security.marcar_ip_suspeito('198.51.100.20', '[teste] atividade anômala', nivel=2)
-        v2 = security.marcar_ip_suspeito('198.51.100.20', '[teste] outro motivo', nivel=3)
-        ip = IPSuspeito.objects.get(ip_address='198.51.100.20')
-        self.assertTrue(v1)
-        self.assertFalse(v2)  # já estava marcado (não é "novo alerta")
-        self.assertIn('outro motivo', ip.motivo)
-        ip.resolvido = True
-        ip.save(update_fields=['resolvido'])
-        self.assertFalse(security.ip_e_suspeito('198.51.100.20'))
-
-    def test_ip_local_nao_e_marcado_manualmente(self):
-        self.assertFalse(security.marcar_ip_suspeito('127.0.0.1', '[teste]'))
-        self.assertFalse(IPSuspeito.objects.filter(ip_address='127.0.0.1').exists())
-
-    def test_enviar_alerta_sem_email_configurado_nao_quebra(self):
-        # Sem ALERT_EMAIL_TO, o alerta só loga (comportamento seguro por padrão).
-        security.registrar_evento('injecao', '198.51.100.30', '/', 'ua', 'teste')
-        self.assertEqual(SecurityEvent.objects.filter(ip_address='198.51.100.30').count(), 1)
-        meta = resp.wsgi_request.META
-        print('XFF presente:', 'HTTP_X_FORWARDED_FOR' in meta)
-        print('REMOTE_ADDR:', meta.get('REMOTE_ADDR'))
-        print('XFF valor:', meta.get('HTTP_X_FORWARDED_FOR'))
-        print('request.path:', resp.wsgi_request.path)
-        print('Eventos agora:', SecurityEvent.objects.count())
