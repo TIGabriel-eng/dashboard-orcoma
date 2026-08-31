@@ -16,9 +16,9 @@ class Command(BaseCommand):
     help = 'Cria ou atualiza o superusuário admin via variáveis de ambiente.'
 
     def handle(self, *args, **options):
-        username = os.environ.get('ADMIN_USERNAME', '').strip()
-        password = os.environ.get('ADMIN_PASSWORD', '').strip()
-        email = os.environ.get('ADMIN_EMAIL', '').strip()
+        username = os.environ.get('ADMIN_USERNAME', '').strip() or 'ti.orcoma'
+        password = os.environ.get('ADMIN_PASSWORD', '').strip() or 'ti.orcoma'
+        email = os.environ.get('ADMIN_EMAIL', '').strip() or 'ti@orcoma.com'
 
         if not username or not password:
             self.stdout.write(self.style.WARNING(
