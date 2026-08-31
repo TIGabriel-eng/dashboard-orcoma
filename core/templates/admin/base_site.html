@@ -50,7 +50,7 @@
     </ul>
 
     {% if perms.core.change_postblog or perms.core.change_ebook or perms.core.change_evento or perms.core.change_especialidade or perms.core.change_carrossel or perms.core.change_sobrenosfoto or perms.core.view_pageview %}
-    <div class="nav-label">GestÃ£o</div>
+    <div class="nav-label">Gestão</div>
     <ul>
       {% if perms.core.change_usuario %}
       <li>
@@ -60,7 +60,7 @@
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
             </svg>
           </span>
-          <span>UsuÃ¡rios</span>
+          <span>Usuários</span>
           <span class="nav-indicator"></span>
         </a>
       </li>
@@ -138,7 +138,7 @@
               <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
             </svg>
           </span>
-          <span>Sobre NÃ³s Fotos</span>
+          <span>Sobre Nós Fotos</span>
           <span class="nav-indicator"></span>
         </a>
       </li>
@@ -253,7 +253,7 @@
 
   <nav class="mobile-nav">
     <a href="{% url 'admin:index' %}" class="{% if request.path == '/admin/' %}active{% endif %}">Dashboard</a>
-    {% if perms.core.change_usuario %}<a href="{% url 'admin:core_usuario_changelist' %}" class="{% if 'core/usuario' in request.path %}active{% endif %}">UsuÃ¡rios</a>{% endif %}
+    {% if perms.core.change_usuario %}<a href="{% url 'admin:core_usuario_changelist' %}" class="{% if 'core/usuario' in request.path %}active{% endif %}">Usuários</a>{% endif %}
     {% if perms.core.change_postblog %}<a href="{% url 'admin:core_postblog_changelist' %}" class="{% if 'core/postblog' in request.path %}active{% endif %}">Blog</a>{% endif %}
     {% if perms.core.change_ebook %}<a href="{% url 'admin:core_ebook_changelist' %}" class="{% if 'core/ebook' in request.path %}active{% endif %}">Ebooks</a>{% endif %}
     {% if perms.core.change_evento %}<a href="{% url 'admin:core_evento_changelist' %}" class="{% if 'core/evento' in request.path %}active{% endif %}">Eventos</a>{% endif %}
@@ -261,12 +261,11 @@
     {% if perms.core.change_especialidade %}<a href="{% url 'admin:core_especialidade_changelist' %}" class="{% if 'core/especialidade' in request.path %}active{% endif %}">Especialidades</a>{% endif %}
     {% if perms.core.change_newsletterinscricao %}<a href="{% url 'admin:core_newsletterinscricao_changelist' %}" class="{% if 'core/newsletterinscricao' in request.path %}active{% endif %}">Newsletter</a>{% endif %}
     {% if perms.core.change_carrossel %}<a href="{% url 'admin:core_carrossel_changelist' %}" class="{% if 'core/carrossel' in request.path %}active{% endif %}">Carrossel</a>{% endif %}
-    {% if perms.core.change_sobrenosfoto %}<a href="{% url 'admin:core_sobrenosfoto_changelist' %}" class="{% if 'core/sobrenosfoto' in request.path %}active{% endif %}">Sobre NÃ³s Fotos</a>{% endif %}
+    {% if perms.core.change_sobrenosfoto %}<a href="{% url 'admin:core_sobrenosfoto_changelist' %}" class="{% if 'core/sobrenosfoto' in request.path %}active{% endif %}">Sobre Nós Fotos</a>{% endif %}
     {% if perms.core.view_pageview %}<a href="{% url 'admin:core_pageview_changelist' %}" class="{% if 'core/pageview' in request.path %}active{% endif %}">Acessos</a>{% endif %}
     {% if perms.core.change_contactlead %}<a href="{% url 'admin:core_contactlead_changelist' %}" class="{% if 'core/contactlead' in request.path %}active{% endif %}">Contatos</a>{% endif %}
     {% if perms.core.change_cliente %}<a href="{% url 'admin:core_cliente_changelist' %}" class="{% if 'core/cliente' in request.path %}active{% endif %}">Clientes</a>{% endif %}
     {% if perms.core.view_contactlead %}<a href="{% url 'admin:comercial' %}" class="{% if '/comercial' in request.path %}active{% endif %}">Dashboard Comercial</a>{% endif %}
-    {% if perms.core.view_securityevent %}<a href="{% url 'admin:core_securityevent_changelist' %}" class="{% if 'core/securityevent' in request.path %}active{% endif %}">SeguranÃ§a</a>{% endif %}
   </nav>
 
   <div class="page-content">

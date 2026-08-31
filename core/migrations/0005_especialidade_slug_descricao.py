@@ -37,7 +37,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='especialidade',
             name='slug',
-            field=models.SlugField(help_text='Identificador usado na URL da página da especialidade (ex: iniciativa-publica)', null=True),
+            # db_index=False: evita que o AddField agende a index "_like" (e a
+            # btree) no final da migração; o AlterField(unique=True) abaixo as
+            # recria corretamente. Sem isso, o Postgres falha criando a index
+            # "core_especialidade_slug_a26f1f77_like" duas vezes.
+            field=models.SlugField(help_text='Identificador usado na URL da página da especialidade (ex: iniciativa-publica)', null=True, db_index=False),
         ),
         migrations.RunPython(backfill_slugs, reverse_slugs),
         migrations.AlterField(

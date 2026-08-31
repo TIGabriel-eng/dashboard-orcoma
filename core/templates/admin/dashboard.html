@@ -9,7 +9,7 @@
   {% if pode_usuarios %}
   <div class="stat-card card-panel">
     <div class="stat-top">
-      <span class="stat-label">Total UsuÃ¡rios</span>
+      <span class="stat-label">Total Usuários</span>
       <div class="stat-icon-box info">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
@@ -17,7 +17,7 @@
       </div>
     </div>
     <div class="stat-value">{{ total_usuarios }}</div>
-    <div class="stat-change">+11% vs mÃªs passado</div>
+    <div class="stat-change">+11% vs mês passado</div>
   </div>
   {% endif %}
 
@@ -45,12 +45,12 @@
       </div>
     </div>
     <div class="stat-value">{{ total_downloads }}</div>
-    <div class="stat-change">+22% no mÃªs</div>
+    <div class="stat-change">+22% no mês</div>
   </div>
 
   <div class="stat-card card-panel highlighted">
     <div class="stat-top">
-      <span class="stat-label">PrÃ³ximos Eventos</span>
+      <span class="stat-label">Próximos Eventos</span>
       <div class="stat-icon-box primary">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
@@ -74,8 +74,8 @@
     </div>
     <div class="stat-value">{{ acessos_periodo }}</div>
     <div class="stat-change">
-      {% if sinal_acessos == 'up' %}â†‘{% elif sinal_acessos == 'down' %}â†“{% else %}â†’{% endif %}
-      {{ variacao_acessos }}% vs perÃ­odo anterior
+      {% if sinal_acessos == 'up' %}↑{% elif sinal_acessos == 'down' %}↓{% else %}→{% endif %}
+      {{ variacao_acessos }}% vs período anterior
     </div>
   </div>
   {% endif %}
@@ -92,8 +92,8 @@
     </div>
     <div class="stat-value">{{ contatos_periodo }}</div>
     <div class="stat-change">
-      {% if sinal_contatos == 'up' %}â†‘{% elif sinal_contatos == 'down' %}â†“{% else %}â†’{% endif %}
-      {{ variacao_contatos }}% vs perÃ­odo anterior
+      {% if sinal_contatos == 'up' %}↑{% elif sinal_contatos == 'down' %}↓{% else %}→{% endif %}
+      {{ variacao_contatos }}% vs período anterior
     </div>
   </div>
   {% endif %}
@@ -110,8 +110,8 @@
     </div>
     <div class="stat-value">{{ candidaturas_periodo }}</div>
     <div class="stat-change">
-      {% if sinal_candidaturas == 'up' %}â†‘{% elif sinal_candidaturas == 'down' %}â†“{% else %}â†’{% endif %}
-      {{ variacao_candidaturas }}% vs perÃ­odo anterior
+      {% if sinal_candidaturas == 'up' %}↑{% elif sinal_candidaturas == 'down' %}↓{% else %}→{% endif %}
+      {{ variacao_candidaturas }}% vs período anterior
     </div>
   </div>
   {% endif %}
@@ -127,16 +127,16 @@
       </div>
     </div>
     <div class="stat-value">{{ total_acessos|add:total_contatos|add:total_candidaturas }}</div>
-    <div class="stat-change">Total de interaÃ§Ãµes</div>
+    <div class="stat-change">Total de interações</div>
   </div>
   {% endif %}
 
 </section>
 
-<!-- Filtro de PerÃ­odo -->
+<!-- Filtro de Período -->
 {% if pode_acessos or pode_comercial or pode_rh %}
 <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
-  <span style="font-size: 14px; color: var(--muted-foreground);">Filtrar por perÃ­odo:</span>
+  <span style="font-size: 14px; color: var(--muted-foreground);">Filtrar por período:</span>
   {% for p in periodos_disponiveis %}
     <a href="?periodo={{ p.key }}" 
        style="padding: 6px 16px; border-radius: 20px; font-size: 13px; text-decoration: none; 
@@ -154,7 +154,7 @@
   <div class="card-panel">
     <div class="dashboard-table-wrap" style="border-bottom:1px solid var(--border);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
       <div>
-        <h2 style="font-family:var(--font-display);font-size:18px;font-weight:600;margin:0;color:var(--foreground)">UsuÃ¡rios Recentes</h2>
+        <h2 style="font-family:var(--font-display);font-size:18px;font-weight:600;margin:0;color:var(--foreground)">Usuários Recentes</h2>
         <p style="font-size:12px;color:var(--muted-foreground);margin:2px 0 0">Monitorando acesso e atividade da plataforma.</p>
       </div>
       <a href="{% url 'admin:core_usuario_changelist' %}" style="font-size:12px;color:var(--primary);text-decoration:none">Ver todos</a>
@@ -188,10 +188,10 @@
                 {{ usuario.get_cargo_display }}
               </span>
             </td>
-            <td style="color:var(--muted-foreground)">{% if usuario.last_login %}{{ usuario.last_login|timesince }} atrÃ¡s{% else %}Nunca{% endif %}</td>
+            <td style="color:var(--muted-foreground)">{% if usuario.last_login %}{{ usuario.last_login|timesince }} atrás{% else %}Nunca{% endif %}</td>
           </tr>
           {% empty %}
-          <tr><td colspan="4" style="color:var(--muted-foreground);padding:32px;text-align:center">Nenhum usuÃ¡rio encontrado</td></tr>
+          <tr><td colspan="4" style="color:var(--muted-foreground);padding:32px;text-align:center">Nenhum usuário encontrado</td></tr>
           {% endfor %}
         </tbody>
       </table>
@@ -245,7 +245,7 @@
           </div>
         </li>
         {% empty %}
-        <li style="color:var(--muted-foreground);font-size:13px">Nenhum ebook disponÃ­vel</li>
+        <li style="color:var(--muted-foreground);font-size:13px">Nenhum ebook disponível</li>
         {% endfor %}
       </ul>
     </div>
@@ -256,7 +256,7 @@
 {% if pode_gestao %}
 <div class="card-panel">
   <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
-    <h3 style="font-family:var(--font-display);font-size:18px;font-weight:600;margin:0;color:var(--foreground)">CalendÃ¡rio de Eventos</h3>
+    <h3 style="font-family:var(--font-display);font-size:18px;font-weight:600;margin:0;color:var(--foreground)">Calendário de Eventos</h3>
   </div>
   <div style="padding:20px">
     <ul class="event-list">
@@ -270,7 +270,7 @@
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
                 </svg>
-                {{ evento.data_inicio|date:"d/m/Y" }} Â· {{ evento.data_inicio|date:"H:i" }}
+                {{ evento.data_inicio|date:"d/m/Y" }} · {{ evento.data_inicio|date:"H:i" }}
               </span>
               <span>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -286,7 +286,7 @@
         </div>
       </li>
       {% empty %}
-      <li style="color:var(--muted-foreground);font-size:13px;text-align:center;padding:32px 0">Nenhum evento prÃ³ximo</li>
+      <li style="color:var(--muted-foreground);font-size:13px;text-align:center;padding:32px 0">Nenhum evento próximo</li>
       {% endfor %}
     </ul>
   </div>
