@@ -16,4 +16,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'orcoma_admin.settings')
 application = get_wsgi_application()
 
 from django.core.management import call_command
-call_command('migrate', '--run-syncdb', verbosity=0)
+# Garante o schema mesmo quando o Render não roda o Procfile (Start Command padrão).
+call_command('migrate', '--noinput', verbosity=0)
+call_command('collectstatic', '--noinput', verbosity=0)
+call_command('criar_superusuario', verbosity=0)
