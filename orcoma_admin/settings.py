@@ -86,8 +86,12 @@ WSGI_APPLICATION = 'orcoma_admin.wsgi.application'
 # O parâmetro `channel_binding=require` (presente em algumas URLs geradas
 # pelo Neon) causa "SSL error: decryption failed or bad record mac" com o
 # psycopg2. Removemos automaticamente para evitar o erro, mantendo o restante.
-_db_url = os.environ.get('DATABASE_URL') or f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
+_db_url = (os.environ.get('DATABASE_URL') or '').strip()
 _db_url = _db_url.replace('channel_binding=require', '').replace('&&', '&').rstrip('&?')
+# Evita o ValueError "No support for ''" quando a DATABASE_URL estiver vazia
+# ou for apenas um host sem esquema (falta "postgresql://user:pass@...").
+if not _db_url:
+    _db_url = f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
 
 DATABASES = {
     'default': dj_database_url.parse(
