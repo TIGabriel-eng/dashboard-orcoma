@@ -35,7 +35,7 @@ def _template_components(dados) -> list:
 
 
 def send_lead_to_whatsapp(dados) -> bool:
-    """Envia os dados do lead para o WhatsApp do Gilton Comercial.
+    """Envia os dados do lead para o WhatsApp da Orcoma Comercial.
 
     Sem credenciais configuradas, apenas registra a mensagem que seria enviada
     e retorna False (o fluxo da API continua funcionando).

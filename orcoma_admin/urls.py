@@ -19,16 +19,13 @@ from django.conf import settings
 from django.views.static import serve as static_serve
 from django.views.generic import RedirectView
 from core.admin import admin_site
-from core.views import frontend_index
 
 urlpatterns = [
+    # A raiz sempre redireciona para o painel administrativo
+    path('', RedirectView.as_view(url='/admin/', permanent=False)),
     path('admin/', admin_site.urls),
     path('', include('core.urls')),
 ]
-
-if not settings.DEBUG:
-    # Em produção a raiz aponta para o painel administrativo
-    urlpatterns.insert(0, path('', RedirectView.as_view(url='/admin/', permanent=False)))
 
 # Serve os arquivos de mídia também em produção. O helper `static()` é no-op
 # com DEBUG=False (retorna []); por isso registramos a rota via re_path,
@@ -40,20 +37,3 @@ urlpatterns += [
         kwargs={'document_root': settings.MEDIA_ROOT},
     ),
 ]
-
-if settings.DEBUG:
-    # Serve the built Vite frontend (dist/) during development
-    frontend_dist = settings.FRONTEND_DIST_DIR
-    urlpatterns += [
-        path('', frontend_index, name='frontend_index'),
-        re_path(
-            r'^(?P<path>assets/.*)$',
-            static_serve,
-            kwargs={'document_root': frontend_dist},
-        ),
-        re_path(
-            r'^(?P<path>.*\.(?:png|jpe?g|gif|svg|webp|ico|txt|xml|json|webmanifest|woff2?|ttf|otf|eot))$',
-            static_serve,
-            kwargs={'document_root': frontend_dist},
-        ),
-    ]

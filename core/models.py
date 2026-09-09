@@ -41,7 +41,14 @@ class PostBlog(models.Model):
     conteudo = models.TextField(help_text='Conteúdo completo do post (exibido na página do post).')
     resumo = models.TextField(max_length=300, blank=True, help_text='Texto curto exibido no card do blog.')
     imagem_destaque = models.ImageField(upload_to='blog/', blank=True, null=True, help_text='Imagem exibida no card do blog.')
-    autor = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='posts')
+    autor = models.ForeignKey(
+        Usuario,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='posts',
+        help_text='Autor do post. Ao excluir o usuário, o post é mantido (autor fica vazio).',
+    )
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='rascunho')
     data_criacao = models.DateTimeField(auto_now_add=True)
     data_publicacao = models.DateTimeField(blank=True, null=True)

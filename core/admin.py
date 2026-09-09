@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import AdminSite
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.forms import AdminPasswordChangeForm
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponseForbidden
@@ -395,11 +397,14 @@ class OrcomaAdminSite(AdminSite):
 admin_site = OrcomaAdminSite(name='orcoma_admin')
 
 
-class UsuarioAdmin(admin.ModelAdmin):
+class UsuarioAdmin(BaseUserAdmin):
     list_display = ['username', 'get_full_name', 'email', 'cargo', 'is_active', 'last_login', 'date_joined']
     list_filter = ['cargo', 'is_active', 'date_joined']
     search_fields = ['username', 'first_name', 'last_name', 'email']
     # list_editable removido — template custom não renderiza campos de formulário
+    # Trocar a senha usa o formulário próprio do Django (gera hash correto);
+    # nunca edite o campo 'password' como texto — isso quebra o login.
+    change_password_form = AdminPasswordChangeForm
     readonly_fields = ['last_login', 'date_joined']
     fieldsets = (
         ('Informações de Login', {

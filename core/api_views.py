@@ -230,7 +230,7 @@ def detalhe_post(request, slug):
             'data_publicacao': _formata_data(post.data_publicacao) if post.data_publicacao else '',
             'imagem': request.build_absolute_uri(post.imagem_destaque.url) if post.imagem_destaque else '',
             'slug': post.slug,
-            'autor': post.autor.get_full_name() or post.autor.username,
+            'autor': (post.autor.get_full_name() or post.autor.username) if post.autor else '',
             'visualizacoes': post.visualizacoes,
         }
     }
@@ -288,7 +288,7 @@ def record_pageview(request):
 @csrf_exempt
 @require_POST
 def submit_contact(request):
-    """Registra um lead do formulário de contato e notifica o WhatsApp do Gilton.
+    """Registra um lead do formulário de contato e notifica o WhatsApp da Orcoma.
 
     Proteções: limite de tamanho do body, rate limit por IP, honeypot anti-bot
     e validação estrita dos campos.

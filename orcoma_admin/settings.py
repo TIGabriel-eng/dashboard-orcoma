@@ -112,6 +112,12 @@ if DATABASES['default']['ENGINE'].endswith('sqlite3'):
 # Custom User Model
 AUTH_USER_MODEL = 'core.Usuario'
 
+# Permite login no admin com e-mail ou nome de usuário + senha
+AUTHENTICATION_BACKENDS = [
+    'core.backends.EmailOuUsuarioBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
@@ -169,6 +175,7 @@ MEDIA_URL = 'media/'
 # em dev mantém a pasta local media/.
 MEDIA_ROOT = Path(os.environ.get('MEDIA_ROOT', str(BASE_DIR / 'media')))
 
+
 # Frontend build output (Vite)
 FRONTEND_DIST_DIR = BASE_DIR.parent / 'frontend' / 'dist'
 
@@ -176,7 +183,7 @@ FRONTEND_DIST_DIR = BASE_DIR.parent / 'frontend' / 'dist'
 WHATSAPP_TOKEN = os.environ.get('WHATSAPP_TOKEN', '')
 WHATSAPP_PHONE_NUMBER_ID = os.environ.get('WHATSAPP_PHONE_NUMBER_ID', '')
 WHATSAPP_TEMPLATE_NAME = os.environ.get('WHATSAPP_TEMPLATE_NAME', '')
-# Número do Gilton Comercial no formato internacional, somente dígitos
+# Número da Orcoma Comercial no formato internacional, somente dígitos
 WHATSAPP_TO = os.environ.get('WHATSAPP_TO', '557399747460')
 
 # Google reCAPTCHA v2 (checkbox) - credenciais vêm do .env, nunca do código
@@ -199,3 +206,12 @@ ALERT_EMAIL_TO = os.environ.get('ALERT_EMAIL_TO', '')
 
 # URL pública do site (usada nos links dos e-mails de alerta)
 SITE_URL = os.environ.get('SITE_URL', 'http://127.0.0.1:8000')
+
+# ---------------------------------------------------------------------------
+# Login / Logout do painel administrativo
+# ---------------------------------------------------------------------------
+# Após sair do admin ("Sair"), volta direto para a tela de login em vez de
+# exibir a página intermediária "Sessão encerrada".
+LOGIN_URL = '/admin/login/'
+LOGIN_REDIRECT_URL = '/admin/'
+LOGOUT_REDIRECT_URL = '/admin/login/'
