@@ -11,6 +11,7 @@ from django.shortcuts import render
 from django.db.models import Count, Sum
 from django.utils import timezone
 from django.utils.html import format_html, mark_safe
+from django_ckeditor_5.widgets import CKEditor5Widget
 from datetime import timedelta
 
 from .models import Usuario, PostBlog, Ebook, Evento, PageView, ContactLead, JobApplication, Especialidade, NewsletterInscricao, Carrossel, SobreNosFoto, Cliente
@@ -447,6 +448,12 @@ class PostBlogAdmin(admin.ModelAdmin):
             'fields': ('visualizacoes', 'data_criacao')
         }),
     )
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        # Campo de conteúdo usa o editor WYSIWYG CKEditor 5
+        if db_field.name == 'conteudo':
+            kwargs['widget'] = CKEditor5Widget(config_name='extends')
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
 
     def imagem_thumbnail(self, obj):
         if obj.imagem_destaque:

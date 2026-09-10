@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_ckeditor_5',
     'core',
 ]
 
@@ -206,6 +207,72 @@ ALERT_EMAIL_TO = os.environ.get('ALERT_EMAIL_TO', '')
 
 # URL pública do site (usada nos links dos e-mails de alerta)
 SITE_URL = os.environ.get('SITE_URL', 'http://127.0.0.1:8000')
+
+# ---------------------------------------------------------------------------
+# CKEditor 5 (editor WYSIWYG dos posts do blog)
+# ---------------------------------------------------------------------------
+CKEDITOR_5_FILE_UPLOAD_PERMISSION = 'staff'  # apenas usuários staff/painel enviam imagens
+
+CKEDITOR_5_CONFIGS = {
+    'extends': {
+        'language': 'pt-br',
+        'undo': {
+            'stackSize': 100,
+        },
+        'toolbar': {
+            'items': [
+                'undo', 'redo', '|',
+                'heading', '|',
+                'bold', 'italic', 'underline', 'strikethrough', 'highlight', 'removeFormat', '|',
+                'fontColor', 'fontBackgroundColor', '|',
+                'alignment', '|',
+                'bulletedList', 'numberedList', 'todoList', '|',
+                'link', 'blockQuote', 'codeBlock', '|',
+                'insertImage', 'imageUpload', 'insertTable', '|',
+                'sourceEditing',
+            ],
+            'shouldNotGroupWhenFull': True,
+        },
+        'image': {
+            'toolbar': [
+                'imageTextAlternative', '|',
+                'imageStyle:alignLeft', 'imageStyle:alignCenter', 'imageStyle:alignRight', 'imageStyle:side', '|',
+                'toggleImageCaption', 'imageResize',
+            ],
+            'styles': ['full', 'side', 'alignLeft', 'alignCenter', 'alignRight', 'block'],
+            'resizeOptions': [
+                {'name': 'resizeImage:original', 'value': None, 'icon': 'original'},
+                {'name': 'resizeImage:25', 'value': '25', 'icon': 'small'},
+                {'name': 'resizeImage:50', 'value': '50', 'icon': 'medium'},
+                {'name': 'resizeImage:75', 'value': '75', 'icon': 'large'},
+            ],
+        },
+        'heading': {
+            'options': [
+                {'model': 'paragraph', 'title': 'Parágrafo', 'class': 'ck-heading_paragraph'},
+                {'model': 'heading1', 'view': 'h1', 'title': 'Título 1', 'class': 'ck-heading_heading1'},
+                {'model': 'heading2', 'view': 'h2', 'title': 'Título 2', 'class': 'ck-heading_heading2'},
+                {'model': 'heading3', 'view': 'h3', 'title': 'Título 3', 'class': 'ck-heading_heading3'},
+                {'model': 'heading4', 'view': 'h4', 'title': 'Título 4', 'class': 'ck-heading_heading4'},
+                {'model': 'heading5', 'view': 'h5', 'title': 'Título 5', 'class': 'ck-heading_heading5'},
+                {'model': 'heading6', 'view': 'h6', 'title': 'Título 6', 'class': 'ck-heading_heading6'},
+            ],
+        },
+        'list': {
+            'properties': {
+                'styles': 'true',
+                'startIndex': 'true',
+                'reversed': 'true',
+            },
+        },
+        'table': {
+            'contentToolbar': [
+                'tableColumn', 'tableRow', 'mergeTableCells',
+                'tableProperties', 'tableCellProperties',
+            ],
+        },
+    },
+}
 
 # ---------------------------------------------------------------------------
 # Login / Logout do painel administrativo

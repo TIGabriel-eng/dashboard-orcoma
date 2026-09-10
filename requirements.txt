@@ -1,5 +1,6 @@
 Django==6.0.6
 Pillow==11.3.0
+django-ckeditor-5==0.2.20
 python-dotenv==1.0.1
 pypdfium2
 gunicorn

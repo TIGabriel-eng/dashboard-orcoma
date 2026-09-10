@@ -24,6 +24,7 @@ urlpatterns = [
     # A raiz sempre redireciona para o painel administrativo
     path('', RedirectView.as_view(url='/admin/', permanent=False)),
     path('admin/', admin_site.urls),
+    path('ckeditor5/', include('django_ckeditor_5.urls')),
     path('', include('core.urls')),
 ]
 

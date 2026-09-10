@@ -239,10 +239,9 @@ def detalhe_post(request, slug):
 
 
 def list_eventos(request):
-    """Lista os eventos ativos e futuros, do mais próximo ao mais distante."""
+    """Lista os eventos ativos, do mais próximo ao mais distante."""
     eventos = Evento.objects.filter(
         ativo=True,
-        data_inicio__gte=timezone.now(),
     ).order_by('data_inicio')
 
     data = {
@@ -264,15 +263,16 @@ def list_eventos(request):
 
 
 @csrf_exempt
-@require_POST
 def record_pageview(request):
-    """Registra uma visita ao site"""
-    try:
-        data = json.loads(request.body) if request.body else {}
-    except json.JSONDecodeError:
-        data = {}
-
-    path = data.get('path', request.META.get('HTTP_REFERER', '/'))
+    """Registra uma visita ao site (aceita GET e POST)"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body) if request.body else {}
+        except json.JSONDecodeError:
+            data = {}
+        path = data.get('path', request.META.get('HTTP_REFERER', '/'))
+    else:
+        path = request.GET.get('path', request.META.get('HTTP_REFERER', '/'))
     ip_address = _get_client_ip(request)
     user_agent = request.META.get('HTTP_USER_AGENT', '')
 

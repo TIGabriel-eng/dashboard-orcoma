@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
+from django_ckeditor_5.fields import CKEditor5Field
 
 
 class Usuario(AbstractUser):
@@ -38,7 +39,11 @@ class PostBlog(models.Model):
     
     titulo = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
-    conteudo = models.TextField(help_text='Conteúdo completo do post (exibido na página do post).')
+    conteudo = CKEditor5Field(
+        verbose_name='Conteúdo',
+        config_name='extends',
+        help_text='Conteúdo completo do post com formatação rica (editor WYSIWYG). Exibido na página do post.',
+    )
     resumo = models.TextField(max_length=300, blank=True, help_text='Texto curto exibido no card do blog.')
     imagem_destaque = models.ImageField(upload_to='blog/', blank=True, null=True, help_text='Imagem exibida no card do blog.')
     autor = models.ForeignKey(
