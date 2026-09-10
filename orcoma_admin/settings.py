@@ -45,18 +45,26 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_ckeditor_5',
+    'corsheaders',
     'core',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+# CORS: o frontend (Vercel) chama a API (Render) diretamente via VITE_API_BASE.
+# Libera apenas a origem de produção; em dev o Vite faz proxy (same-origin).
+CORS_ALLOWED_ORIGINS = [
+    'https://grupo-orcoma.vercel.app',
 ]
 
 ROOT_URLCONF = 'orcoma_admin.urls'
