@@ -2,6 +2,8 @@
 Custom Django storage backend for Supabase Storage.
 """
 import os
+import re
+import unicodedata
 from django.core.files.storage import Storage
 from django.conf import settings
 from supabase import create_client, Client
@@ -25,6 +27,7 @@ class SupabaseStorage(Storage):
         return ContentFile(response)
 
     def _save(self, name, content):
+        name = self._sanitize_name(name)
         content.seek(0)
         file_bytes = content.read()
         self.client.storage.from_(self.bucket_name).upload(
@@ -33,6 +36,24 @@ class SupabaseStorage(Storage):
             file_options={"content-type": self._guess_content_type(name)},
         )
         return name
+
+    @staticmethod
+    def _sanitize_name(name):
+        """Supabase Storage só aceita nomes ASCII seguros; remove acentos e demais caracteres inválidos."""
+        name = name.replace('\\', '/')
+        stem, _, ext = name.rpartition('/')
+        basename = ext
+        ext = ''
+        if '.' in basename:
+            basename, _, ext = basename.rpartition('.')
+            ext = '.' + ext
+        basename = unicodedata.normalize('NFKD', basename)
+        basename = ''.join(c for c in basename if not unicodedata.combining(c))
+        basename = re.sub(r'[^a-zA-Z0-9._-]', '_', basename)
+        basename = re.sub(r'_+', '_', basename).strip('_')
+        if not basename:
+            basename = 'arquivo'
+        return f'{stem}/{basename}{ext}' if stem else f'{basename}{ext}'
 
     def delete(self, name):
         try:
