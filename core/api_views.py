@@ -17,6 +17,7 @@ from django.core.validators import validate_email
 from django.db.models import F
 from django.http import FileResponse, JsonResponse
 from django.shortcuts import get_object_or_404
+from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils import timezone
@@ -180,6 +181,7 @@ def _formata_data_evento(dt):
     return f"{dt.day:02d} {MESES_ABREV[dt.month - 1]}"
 
 
+@cache_control(public=True, max_age=300, stale_while_revalidate=600)
 def list_posts(request):
     """Lista os posts publicados do blog, do mais recente ao mais antigo."""
     posts = PostBlog.objects.filter(status='publicado').order_by('-data_publicacao')
@@ -238,6 +240,7 @@ def detalhe_post(request, slug):
     return JsonResponse(data)
 
 
+@cache_control(public=True, max_age=300, stale_while_revalidate=600)
 def list_eventos(request):
     """Lista os eventos ativos, do mais próximo ao mais distante."""
     eventos = Evento.objects.filter(
@@ -764,6 +767,7 @@ def subscribe_newsletter(request):
     return JsonResponse({'status': 'ok', 'message': 'E-mail já cadastrado!'})
 
 
+@cache_control(public=True, max_age=300, stale_while_revalidate=600)
 def list_carrossel(request):
     """Lista as imagens ativas do carrossel do hero, ordenadas por 'ordem'."""
     slides = Carrossel.objects.filter(ativo=True).order_by('ordem', 'data_criacao')
@@ -794,6 +798,7 @@ def list_carrossel(request):
     return JsonResponse(data)
 
 
+@cache_control(public=True, max_age=300, stale_while_revalidate=600)
 def list_sobre_nos_fotos(request):
     """Lista as fotos ativas do carrossel 3D da seção Sobre Nós, ordenadas por 'ordem'."""
     fotos = SobreNosFoto.objects.filter(ativo=True).order_by('ordem', 'data_criacao')
@@ -813,6 +818,7 @@ def list_sobre_nos_fotos(request):
     return JsonResponse(data)
 
 
+@cache_control(public=True, max_age=300, stale_while_revalidate=600)
 def list_especialidades(request):
     """Lista as especialidades ativas, ordenadas por campo 'ordem'."""
     especialidades = Especialidade.objects.filter(ativo=True).order_by('ordem', 'titulo')
@@ -833,6 +839,7 @@ def list_especialidades(request):
     return JsonResponse(data)
 
 
+@cache_control(public=True, max_age=300, stale_while_revalidate=600)
 def detalhe_especialidade(request, slug):
     """Retorna os dados de uma especialidade ativa pelo seu slug."""
     try:
@@ -854,6 +861,7 @@ def detalhe_especialidade(request, slug):
     return JsonResponse(data)
 
 
+@cache_control(public=True, max_age=300, stale_while_revalidate=600)
 def list_ebooks(request):
     """Lista os ebooks ativos, do mais recente ao mais antigo."""
     ebooks = Ebook.objects.filter(ativo=True).order_by('-data_criacao')
