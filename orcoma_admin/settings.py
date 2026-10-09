@@ -105,7 +105,9 @@ if not _db_url:
 DATABASES = {
     'default': dj_database_url.parse(
         _db_url,
-        conn_max_age=60,
+        # 0 fecha a conexão ao fim de cada requisição: o pooler do Supabase (session mode)
+        # aceita só ~15 clientes e as threads do gunicorn esgotavam essas vagas.
+        conn_max_age=0,
         conn_health_checks=True,
     )
 }
