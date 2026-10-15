@@ -220,6 +220,8 @@ EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'true').lower() in ('1', 'true',
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'no-reply@orcoma.com.br')
 # Destinatário dos alertas de segurança detectados pelo site.
 ALERT_EMAIL_TO = os.environ.get('ALERT_EMAIL_TO', '')
+# Destinatário (RH) das candidaturas enviadas pelo formulário Trabalhe Conosco.
+VAGAS_EMAIL_TO = os.environ.get('VAGAS_EMAIL_TO', '')
 
 # URL pública do site (usada nos links dos e-mails de alerta)
 SITE_URL = os.environ.get('SITE_URL', 'http://127.0.0.1:8000')

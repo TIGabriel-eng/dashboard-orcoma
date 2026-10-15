@@ -159,22 +159,6 @@
     </ul>
     {% endif %}
 
-    {% if perms.core.change_jobapplication %}
-    <div class="nav-label" style="margin-top:24px;color:#9ca3af">RH</div>
-    <ul>
-      <li>
-        <a href="{% url 'admin:core_jobapplication_changelist' %}" class="nav-item {% if 'core/jobapplication' in request.path %}active selected{% endif %}">
-          <span class="nav-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-            </svg>
-          </span>
-          <span>Trabalhe Conosco</span>
-          <span class="nav-indicator"></span>
-        </a>
-      </li>
-    </ul>
-    {% endif %}
 
     {% if perms.core.view_contactlead or perms.core.change_contactlead or perms.core.change_cliente or perms.core.change_newsletterinscricao %}
     <div class="nav-label" style="margin-top:24px;color:#9ca3af">Comercial</div>
@@ -257,7 +241,6 @@
     {% if perms.core.change_postblog %}<a href="{% url 'admin:core_postblog_changelist' %}" class="{% if 'core/postblog' in request.path %}active{% endif %}">Blog</a>{% endif %}
     {% if perms.core.change_ebook %}<a href="{% url 'admin:core_ebook_changelist' %}" class="{% if 'core/ebook' in request.path %}active{% endif %}">Ebooks</a>{% endif %}
     {% if perms.core.change_evento %}<a href="{% url 'admin:core_evento_changelist' %}" class="{% if 'core/evento' in request.path %}active{% endif %}">Eventos</a>{% endif %}
-    {% if perms.core.change_jobapplication %}<a href="{% url 'admin:core_jobapplication_changelist' %}" class="{% if 'core/jobapplication' in request.path %}active{% endif %}">Trabalhe Conosco</a>{% endif %}
     {% if perms.core.change_especialidade %}<a href="{% url 'admin:core_especialidade_changelist' %}" class="{% if 'core/especialidade' in request.path %}active{% endif %}">Especialidades</a>{% endif %}
     {% if perms.core.change_newsletterinscricao %}<a href="{% url 'admin:core_newsletterinscricao_changelist' %}" class="{% if 'core/newsletterinscricao' in request.path %}active{% endif %}">Newsletter</a>{% endif %}
     {% if perms.core.change_carrossel %}<a href="{% url 'admin:core_carrossel_changelist' %}" class="{% if 'core/carrossel' in request.path %}active{% endif %}">Carrossel</a>{% endif %}

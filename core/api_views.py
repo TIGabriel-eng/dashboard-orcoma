@@ -1,6 +1,7 @@
 import io
 import json
 import logging
+import mimetypes
 import re
 import secrets
 import time
@@ -13,6 +14,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
+from django.core.mail import EmailMessage
 from django.core.validators import validate_email
 from django.db.models import F
 from django.http import FileResponse, JsonResponse
@@ -634,6 +636,38 @@ def _verifica_recaptcha(response_token: str) -> bool:
         return True
 
 
+def _envia_candidatura_por_email(nome, email, telefone, mensagem, arquivo_nome, arquivo_bytes):
+    """Envia a candidatura com o currículo anexado para o e-mail de RH (VAGAS_EMAIL_TO).
+
+    Não derruba a requisição se o envio falhar: a candidatura já foi salva no admin.
+    """
+    destino = getattr(settings, 'VAGAS_EMAIL_TO', '')
+    if not destino:
+        logger.warning('[Vagas] VAGAS_EMAIL_TO não configurado: candidatura salva, mas não enviada por e-mail.')
+        return
+
+    corpo = (
+        'Nova candidatura pelo site (Trabalhe Conosco).\n\n'
+        f'Nome: {nome}\n'
+        f'E-mail: {email}\n'
+        f'Telefone: {telefone or "-"}\n\n'
+        f'Mensagem:\n{mensagem or "-"}\n'
+    )
+    msg = EmailMessage(
+        subject=f'Nova candidatura: {nome}',
+        body=corpo,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[destino],
+        reply_to=[email],
+    )
+    tipo = mimetypes.guess_type(arquivo_nome)[0] or 'application/octet-stream'
+    msg.attach(arquivo_nome, arquivo_bytes, tipo)
+    try:
+        msg.send(fail_silently=False)
+    except Exception as exc:
+        logger.error('[Vagas] Falha ao enviar candidatura por e-mail: %s', exc)
+
+
 @csrf_exempt
 @require_POST
 def submit_job_application(request):
@@ -711,6 +745,9 @@ def submit_job_application(request):
         return JsonResponse({'status': 'error', 'message': ' '.join(errors)}, status=400)
 
     curriculo_file.name = get_valid_filename(curriculo_file.name)
+    curriculo_file.seek(0)
+    curriculo_bytes = curriculo_file.read()
+    curriculo_file.seek(0)
 
     candidatura = JobApplication.objects.create(
         nome=nome,
@@ -720,6 +757,7 @@ def submit_job_application(request):
         curriculo=curriculo_file,
     )
     _gera_preview_curriculo(candidatura)
+    _envia_candidatura_por_email(nome, email, telefone, mensagem, curriculo_file.name, curriculo_bytes)
 
     return JsonResponse({'status': 'ok', 'message': 'Candidatura registrada com sucesso!'})
 
