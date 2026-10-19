@@ -216,15 +216,17 @@ def detalhe_post(request, slug):
     except PostBlog.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Post não encontrado'}, status=404)
 
-    ip = _get_client_ip(request)
-    if ip:
-        vis, created = PostVisualizacao.objects.get_or_create(post=post, ip_address=ip)
-        if created:
+    # `snapshot=1` vem do build do frontend (scripts/snapshot-site-data.mjs): não é visita real
+    if request.GET.get('snapshot') != '1':
+        ip = _get_client_ip(request)
+        if ip:
+            vis, created = PostVisualizacao.objects.get_or_create(post=post, ip_address=ip)
+            if created:
+                PostBlog.objects.filter(pk=post.pk).update(visualizacoes=F('visualizacoes') + 1)
+                post.refresh_from_db()
+        else:
             PostBlog.objects.filter(pk=post.pk).update(visualizacoes=F('visualizacoes') + 1)
             post.refresh_from_db()
-    else:
-        PostBlog.objects.filter(pk=post.pk).update(visualizacoes=F('visualizacoes') + 1)
-        post.refresh_from_db()
 
     data = {
         'post': {
