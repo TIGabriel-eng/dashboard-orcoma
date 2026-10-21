@@ -14,10 +14,11 @@ from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
+from django.core import signing
 from django.core.mail import EmailMessage
 from django.core.validators import validate_email
 from django.db.models import F
-from django.http import FileResponse, JsonResponse
+from django.http import FileResponse, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import csrf_exempt
@@ -28,6 +29,7 @@ from django.utils.text import get_valid_filename
 from PIL import Image
 
 from .models import PageView, ContactLead, JobApplication, PostBlog, Evento, Especialidade, NewsletterInscricao, Ebook, PostVisualizacao, Carrossel, SobreNosFoto, Cliente
+from .newsletter import SALT_DESCADASTRO, enviar_boas_vindas
 from .whatsapp import send_lead_to_whatsapp
 from . import security
 
@@ -800,11 +802,31 @@ def subscribe_newsletter(request):
         inscricao.nome = nome
     if celular:
         inscricao.celular = celular
+    # Quem tinha cancelado e se inscreve de novo volta a receber; quem já está ativo não recebe outro e-mail
+    reativada = not inscricao.ativo
+    inscricao.ativo = True
     inscricao.save()
+
+    if created or reativada:
+        enviar_boas_vindas(inscricao)
 
     if created:
         return JsonResponse({'status': 'ok', 'message': 'E-mail cadastrado com sucesso!'})
     return JsonResponse({'status': 'ok', 'message': 'E-mail já cadastrado!'})
+
+
+def descadastrar_newsletter(request):
+    """Cancela a inscrição pelo link do e-mail. Não exige login."""
+    try:
+        pk = signing.loads(request.GET.get('t', ''), salt=SALT_DESCADASTRO)
+    except signing.BadSignature:
+        return HttpResponse('Link inválido.', status=400, content_type='text/plain; charset=utf-8')
+
+    NewsletterInscricao.objects.filter(pk=pk).update(ativo=False)
+    return HttpResponse(
+        'Você saiu da newsletter da Orcoma e não receberá mais e-mails.',
+        content_type='text/plain; charset=utf-8',
+    )
 
 
 @cache_control(public=True, max_age=300, stale_while_revalidate=600)

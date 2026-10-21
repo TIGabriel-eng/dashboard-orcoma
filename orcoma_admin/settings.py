@@ -225,6 +225,8 @@ VAGAS_EMAIL_TO = os.environ.get('VAGAS_EMAIL_TO', '')
 
 # URL pública do site (usada nos links dos e-mails de alerta)
 SITE_URL = os.environ.get('SITE_URL', 'http://127.0.0.1:8000')
+# Site público (frontend), usado nos links dos e-mails da newsletter
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://grupo-orcoma.vercel.app')
 
 # ---------------------------------------------------------------------------
 # CKEditor 5 (editor WYSIWYG dos posts do blog)

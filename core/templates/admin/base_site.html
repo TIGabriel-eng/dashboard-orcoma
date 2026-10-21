@@ -244,8 +244,7 @@
     {% if perms.core.change_especialidade %}<a href="{% url 'admin:core_especialidade_changelist' %}" class="{% if 'core/especialidade' in request.path %}active{% endif %}">Especialidades</a>{% endif %}
     {% if perms.core.change_newsletterinscricao %}<a href="{% url 'admin:core_newsletterinscricao_changelist' %}" class="{% if 'core/newsletterinscricao' in request.path %}active{% endif %}">Newsletter</a>{% endif %}
     {% if perms.core.change_carrossel %}<a href="{% url 'admin:core_carrossel_changelist' %}" class="{% if 'core/carrossel' in request.path %}active{% endif %}">Carrossel</a>{% endif %}
-    {% if perms.core.change_sobrenosfoto %}<a href="{% url 'admin:core_sobrenosfoto_changelist' %}" class="{% if 'core/sobrenosfoto' in request.path %}active{% endif %}">Sobre Nós Fotos</a>{% endif %}
-    {% if perms.core.view_pageview %}<a href="{% url 'admin:core_pageview_changelist' %}" class="{% if 'core/pageview' in request.path %}active{% endif %}">Acessos</a>{% endif %}
+    {% if perms.core.change_sobrenosfoto %}<a href="{% url 'admin:core_sobrenosfoto_changelist' %}" class="{% if 'core/sobrenosfoto' in request.path %}active{% endif %}">Sobre Nós Fotos</a>{% endif %}    {% if perms.core.view_pageview %}<a href="{% url 'admin:core_pageview_changelist' %}" class="{% if 'core/pageview' in request.path %}active{% endif %}">Acessos</a>{% endif %}
     {% if perms.core.change_contactlead %}<a href="{% url 'admin:core_contactlead_changelist' %}" class="{% if 'core/contactlead' in request.path %}active{% endif %}">Contatos</a>{% endif %}
     {% if perms.core.change_cliente %}<a href="{% url 'admin:core_cliente_changelist' %}" class="{% if 'core/cliente' in request.path %}active{% endif %}">Clientes</a>{% endif %}
     {% if perms.core.view_contactlead %}<a href="{% url 'admin:comercial' %}" class="{% if '/comercial' in request.path %}active{% endif %}">Dashboard Comercial</a>{% endif %}

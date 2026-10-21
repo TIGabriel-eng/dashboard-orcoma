@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from django_ckeditor_5.fields import CKEditor5Field
@@ -70,7 +70,13 @@ class PostBlog(models.Model):
     def save(self, *args, **kwargs):
         if self.status == 'publicado' and not self.data_publicacao:
             self.data_publicacao = timezone.now()
+        # Os assinantes são avisados só na primeira vez que o post vira publicado
+        ja_publicado = bool(self.pk) and PostBlog.objects.filter(pk=self.pk, status='publicado').exists()
+        avisar = self.status == 'publicado' and not ja_publicado
         super().save(*args, **kwargs)
+        if avisar:
+            from .newsletter import enviar_novo_post
+            transaction.on_commit(lambda: enviar_novo_post(self.pk))
 
 
 class PostVisualizacao(models.Model):
