@@ -261,6 +261,7 @@ def list_eventos(request):
                 'local': evento.local,
                 'data': _formata_data_evento(evento.data_inicio),
                 'data_completa': _formata_data(evento.data_inicio),
+                'data_inicio_iso': evento.data_inicio.isoformat(),
                 'imagem': request.build_absolute_uri(evento.imagem.url) if evento.imagem else '',
                 'link_inscricao': evento.link_inscricao or '',
             }
