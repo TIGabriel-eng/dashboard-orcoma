@@ -242,11 +242,13 @@ class NewsletterInscricao(models.Model):
         ('contato', 'Contato'),
         ('footer', 'Footer'),
         ('blog', 'Blog'),
+        ('popup', 'Pop-up do site'),
     )
 
     email = models.EmailField(unique=True, help_text='E-mail do cliente')
     nome = models.CharField(max_length=200, blank=True, help_text='Nome do cliente (opcional)')
     celular = models.CharField(max_length=30, blank=True, help_text='Celular do cliente (opcional)')
+    cnpj = models.CharField(max_length=20, blank=True, help_text='CNPJ do cliente (opcional)')
     origem = models.CharField(max_length=20, choices=ORIGEM_CHOICES, default='footer')
     ativo = models.BooleanField(default=True, help_text='Assinatura ativa (não cancelada)')
     data_criacao = models.DateTimeField(auto_now_add=True)

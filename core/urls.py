@@ -1,5 +1,5 @@
 from django.urls import path
-from core import api_views
+from core import api_views, video_views
 
 urlpatterns = [
     path('api/posts/', api_views.list_posts, name='api_posts'),
@@ -18,4 +18,6 @@ urlpatterns = [
     path('api/job-application/', api_views.submit_job_application, name='api_job_application'),
     path('api/newsletter/', api_views.subscribe_newsletter, name='api_newsletter'),
     path('api/newsletter/descadastrar/', api_views.descadastrar_newsletter, name='api_newsletter_descadastrar'),
+    path('api/video/<str:nome>/link/', video_views.link_video, name='api_video_link'),
+    path('api/video/stream/', video_views.stream_video, name='api_video_stream'),
 ]

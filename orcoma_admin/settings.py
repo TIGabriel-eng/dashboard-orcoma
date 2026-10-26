@@ -197,6 +197,8 @@ MEDIA_URL = 'media/'
 # Em produção o Render usa um disco persistente (env MEDIA_ROOT=/var/data/media);
 # em dev mantém a pasta local media/.
 MEDIA_ROOT = Path(os.environ.get('MEDIA_ROOT', str(BASE_DIR / 'media')))
+# Arquivos privados (ex.: vídeos entregues só com link temporário). Não fica exposto em /media/.
+PRIVATE_MEDIA_ROOT = Path(os.environ.get('PRIVATE_MEDIA_ROOT', str(BASE_DIR / 'private_media')))
 
 
 # Frontend build output (Vite)

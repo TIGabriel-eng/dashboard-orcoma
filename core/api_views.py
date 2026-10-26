@@ -646,8 +646,9 @@ def _envia_candidatura_por_email(nome, email, telefone, mensagem, arquivo_nome, 
 
     Não derruba a requisição se o envio falhar: a candidatura já foi salva no admin.
     """
-    destino = getattr(settings, 'VAGAS_EMAIL_TO', '')
-    if not destino:
+    # Aceita mais de um e-mail separado por vírgula (ex.: "rh1@orcoma.com.br,rh2@orcoma.com.br")
+    destinos = [e.strip() for e in getattr(settings, 'VAGAS_EMAIL_TO', '').split(',') if e.strip()]
+    if not destinos:
         logger.warning('[Vagas] VAGAS_EMAIL_TO não configurado: candidatura salva, mas não enviada por e-mail.')
         return
 
@@ -662,7 +663,7 @@ def _envia_candidatura_por_email(nome, email, telefone, mensagem, arquivo_nome, 
         subject=f'Nova candidatura: {nome}',
         body=corpo,
         from_email=settings.DEFAULT_FROM_EMAIL,
-        to=[destino],
+        to=destinos,
         reply_to=[email],
     )
     tipo = mimetypes.guess_type(arquivo_nome)[0] or 'application/octet-stream'
@@ -779,6 +780,7 @@ def subscribe_newsletter(request):
     email = data.get('email', '').strip()
     nome = data.get('nome', '').strip()[:200]
     celular = data.get('celular', '').strip()[:30]
+    cnpj = data.get('cnpj', '').strip()[:20]
     origem = data.get('origem', 'footer').strip()
 
     if not email:
@@ -790,6 +792,9 @@ def subscribe_newsletter(request):
         validate_email(email)
     except ValidationError:
         return JsonResponse({'status': 'error', 'message': 'E-mail inválido'}, status=400)
+
+    if cnpj and not _valida_cnpj(cnpj):
+        return JsonResponse({'status': 'error', 'message': 'CNPJ inválido.'}, status=400)
 
     if origem not in dict(NewsletterInscricao.ORIGEM_CHOICES):
         origem = 'footer'
@@ -803,6 +808,8 @@ def subscribe_newsletter(request):
         inscricao.nome = nome
     if celular:
         inscricao.celular = celular
+    if cnpj:
+        inscricao.cnpj = cnpj
     # Quem tinha cancelado e se inscreve de novo volta a receber; quem já está ativo não recebe outro e-mail
     reativada = not inscricao.ativo
     inscricao.ativo = True
