@@ -71,6 +71,8 @@ MIDDLEWARE = [
 # Libera apenas a origem de produção; em dev o Vite faz proxy (same-origin).
 CORS_ALLOWED_ORIGINS = [
     'https://grupo-orcoma.vercel.app',
+    'https://orcoma.com.br',
+    'https://www.orcoma.com.br',
 ]
 
 ROOT_URLCONF = 'orcoma_admin.urls'
